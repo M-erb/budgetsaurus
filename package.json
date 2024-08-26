@@ -1,0 +1,51 @@
+{
+	"name": "budgetsaurus",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "npm run dev",
+		"dev": "pollen && vite dev",
+		"build": "pollen && vite build",
+		"start:wrangler": "wrangler pages dev .svelte-kit/cloudflare --live-reload",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "vitest",
+		"lint": "eslint .",
+		"wrangler": "wrangler",
+		"drizzle-kit": "drizzle-kit",
+		"gen-migrate": "NODE_ENV=development drizzle-kit generate",
+		"dev-migrate": "NODE_ENV=development drizzle-kit migrate",
+		"prod-migrate": "NODE_ENV=production drizzle-kit migrate",
+		"prod-migrate2": "tsx ./drizzle/prod-migration.ts",
+		"tsx": "tsx"
+	},
+	"dependencies": {
+		"@fontsource/fira-sans": "^5.0.21",
+		"@fontsource/ubuntu-mono": "^5.0.20",
+		"@libsql/client": "^0.9.0",
+		"drizzle-orm": "^0.33.0",
+		"pollen-css": "^5.0.1",
+		"postcss-preset-env": "^10.0.1"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-cloudflare": "^4.7.2",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@types/eslint": "^9.6.0",
+		"dotenv": "^16.4.5",
+		"drizzle-kit": "^0.24.0",
+		"eslint": "^9.0.0",
+		"eslint-plugin-svelte": "^2.36.0",
+		"globals": "^15.0.0",
+		"svelte": "^4.2.7",
+		"svelte-check": "^3.6.0",
+		"tsx": "^4.18.0",
+		"typescript": "^5.0.0",
+		"typescript-eslint": "^8.0.0",
+		"vite": "^5.0.3",
+		"vitest": "^2.0.0",
+		"wrangler": "^3.72.2"
+	}
+}

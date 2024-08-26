@@ -1,0 +1,24 @@
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+.svelte-kit
+/build
+.wrangler
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+dev_db.db
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
