@@ -6,16 +6,16 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
-		interface Platform {
-			env?: {
-				db: D1Database
-			}
-			context: {
-				/* eslint-disable  @typescript-eslint/no-explicit-any */
-				waitUntil(promise: Promise<any>): void;
-			}
-			caches: CacheStorage & { default: Cache }
-		}
+		// interface Platform {
+		// 	env?: {
+		// 		db: D1Database
+		// 	}
+		// 	context: {
+		// 		/* eslint-disable  @typescript-eslint/no-explicit-any */
+		// 		waitUntil(promise: Promise<any>): void;
+		// 	}
+		// 	caches: CacheStorage & { default: Cache }
+		// }
 	}
 }
 
