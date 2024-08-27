@@ -1,15 +1,15 @@
 CREATE TABLE `categories` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`note` text NOT NULL,
+	`note` text,
 	`createdAt` integer DEFAULT (CURRENT_TIMESTAMP)
 );
 --> statement-breakpoint
 CREATE TABLE `months` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`yearId` integer,
+	`yearId` integer NOT NULL,
 	`name` text NOT NULL,
-	`note` text NOT NULL,
+	`note` text,
 	`createdAt` integer DEFAULT (CURRENT_TIMESTAMP),
 	FOREIGN KEY (`yearId`) REFERENCES `years`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -17,14 +17,14 @@ CREATE TABLE `months` (
 CREATE TABLE `shareGroups` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`defaultValue` integer NOT NULL,
-	`note` text NOT NULL,
+	`note` text,
 	`createdAt` integer DEFAULT (CURRENT_TIMESTAMP)
 );
 --> statement-breakpoint
 CREATE TABLE `transactions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`monthId` integer,
-	`catId` integer,
+	`monthId` integer NOT NULL,
+	`catId` integer NOT NULL,
 	`name` text NOT NULL,
 	`note` text,
 	`amount` integer NOT NULL,
@@ -44,6 +44,6 @@ CREATE TABLE `user` (
 CREATE TABLE `years` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`note` text NOT NULL,
+	`note` text,
 	`createdAt` integer DEFAULT (CURRENT_TIMESTAMP)
 );
