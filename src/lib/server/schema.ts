@@ -13,36 +13,36 @@ export const user = sqliteTable('user', {
 export const cats = sqliteTable('categories', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  note: text('note').notNull(),
+  note: text('note'),
   createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
 
 export const shareGroups = sqliteTable('shareGroups', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   defaultValue: integer('defaultValue').notNull(),
-  note: text('note').notNull(),
+  note: text('note'),
   createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
 
 export const years = sqliteTable('years', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  note: text('note').notNull(),
+  note: text('note'),
   createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
 
 export const months = sqliteTable('months', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-  yearId: integer('yearId').references(() => years.id),
+  yearId: integer('yearId').references(() => years.id).notNull(),
   name: text('name').notNull(),
-  note: text('note').notNull(),
+  note: text('note'),
   createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
 
 export const transactions = sqliteTable('transactions', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-  monthId: integer('monthId').references(() => months.id),
-  catId: integer('catId').references(() => cats.id),
+  monthId: integer('monthId').references(() => months.id).notNull(),
+  catId: integer('catId').references(() => cats.id).notNull(),
   name: text('name').notNull(),
   note: text('note'),
   amount: integer('amount', { mode: 'number' }).notNull(),
