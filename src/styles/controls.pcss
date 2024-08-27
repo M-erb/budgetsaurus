@@ -4,7 +4,7 @@ label {
 
   & > .label {
     display: block;
-    font-family: Ubuntu, sans-serif;
+    font-family: var(--font-body);
     font-size: var(--scale-00);
     font-weight: bold;
     text-transform: uppercase;
@@ -15,7 +15,7 @@ label {
   & input, & textarea {
     width: 100%;
     min-width: 200px;
-    font-family: Ubuntu, sans-serif;
+    font-family: var(--font-body);
     font-size: var(--scale-00);
     line-height: 1.4;
     border: 1px solid var(--color-grey-300);
@@ -29,6 +29,17 @@ label {
     min-height: 180px;
     max-height: 500px;
   }
+
+	& select {
+		width: 100%;
+		min-width: 200px;
+    font-family: var(--font-body);
+    font-size: var(--scale-00);
+    line-height: 1.4;
+    border: 1px solid var(--color-grey-300);
+    border-radius: var(--radius-md);
+    padding: var(--size-2) var(--size-2);
+	}
 
   & .error_space {
     color: var(--color-red-300);
@@ -109,9 +120,9 @@ label {
   flex: 0 0 auto;
 
   border: none;
-  border-radius: 999px;
-  background-color: var(--color-orange);
-  padding: var(--size-3) var(--size-5);
+	border-radius: var(--radius-md);
+  background-color: var(--color-purple);
+  padding: var(--size-2) var(--size-4);
   min-width: var(--size-44);
   color: var(--color-white);
   font-family: Ubuntu, sans-serif;
@@ -119,8 +130,7 @@ label {
   font-size: var(--scale-2);
   text-align: center;
   text-decoration: none;
-  transition: box-shadow .3s ease-in-out, color .3s ease-in-out;
-  box-shadow: var(--color-black) 0px 0px 0px 0px;
+  transition: background-color .3s ease-in-out, color .3s ease-in-out;
   cursor: pointer;
 
   & span {
@@ -135,7 +145,7 @@ label {
   &:hover {
     text-decoration: none;
     color: var(--color-black);
-    box-shadow: var(--color-black) 5px 5px 0px 0px;
+		background-color: var(--color-purple-700);
   }
 
   &.__on_dark:hover:hover {
@@ -146,17 +156,6 @@ label {
     font-size: var(--scale-0);
     padding: var(--size-3) var(--size-4);
     min-width: auto;
-  }
-
-  &.__txt {
-    background-color: transparent;
-    color: var(--color-blue);
-    box-shadow: none;
-
-    &:hover {
-      box-shadow: none;
-      text-decoration: underline;
-    }
   }
 }
 
@@ -207,7 +206,6 @@ html[data-theme="dark"] {
 }
 
 .btn_wrap {
-  margin-top: var(--size-24);
   display: flex;
   justify-content: flex-start;
   align-items: center;
