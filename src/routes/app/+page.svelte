@@ -3,7 +3,6 @@
 	import NewMonth from '$lib/components/new-month.svelte'
 
 	export let data:PageServerData
-	console.log('data: ', data)
 	let isEmpty = !Boolean(data.years.length)
 </script>
 
@@ -17,11 +16,11 @@
 			<ul>
 				{#each data.years as year}
 					<li>
-						<p><a href="">{year.name}</a></p>
+						<p>{year.name}</p>
 						<ul>
 							{#each year.months as month}
 								<li>
-									<p><a href="">{month.name}</a></p>
+									<p><a href="/app/month/{month.id}">{month.name}</a></p>
 								</li>
 							{/each}
 						</ul>
@@ -32,6 +31,6 @@
 	{/if}
 </section>
 
-<section class="container">
+<!-- <section class="container">
 	<p><a href="/app/years">Years</a> - <a href="/app/months">Months</a></p>
-</section>
+</section> -->
