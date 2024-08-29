@@ -2,7 +2,7 @@ import { sql, relations } from 'drizzle-orm'
 import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core'
 
 // tables --------------------
-export const user = sqliteTable('user', {
+export const users = sqliteTable('users', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
 	email: text('email').notNull(),
@@ -26,7 +26,7 @@ export const shareGroups = sqliteTable('shareGroups', {
 
 export const years = sqliteTable('years', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	note: text('note'),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
@@ -45,7 +45,7 @@ export const transactions = sqliteTable('transactions', {
 	catId: integer('catId').references(() => cats.id).notNull(),
 	name: text('name').notNull(),
 	note: text('note'),
-	amount: integer('amount', { mode: 'number' }).notNull(),
+	amount: integer('amount', { mode: 'number' }).notNull(), // amount in cents, will convert to dollars as needed to prevent odd floating point inconsistentcies
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
 })
 

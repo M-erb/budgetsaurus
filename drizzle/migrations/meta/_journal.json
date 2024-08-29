@@ -8,6 +8,13 @@
       "when": 1724789619354,
       "tag": "0000_steep_silver_sable",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1724946562827,
+      "tag": "0001_chemical_living_lightning",
+      "breakpoints": true
     }
   ]
 }
