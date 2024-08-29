@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
 import { db } from '$lib/server/db'
 import { to } from '@/lib/lilUtils'
+import { getMonthsCatsTotals } from '$lib/server/queries/getMonthsCatsTotals'
 
 export const load: PageServerLoad = async ({ params }) => {
 	console.log('params: ', params)
@@ -22,7 +23,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		error(500, { message: 'something went wrong' })
 	}
 
+	const monthsCatsTotals = await getMonthsCatsTotals(month.yearId, month.id)
+
 	return {
-		month
+		month,
+		monthsCatsTotals
 	}
 }
