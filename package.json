@@ -18,10 +18,11 @@
 		"gen-migrate": "NODE_ENV=development drizzle-kit generate",
 		"dev-migrate": "NODE_ENV=development drizzle-kit migrate",
 		"prod-migrate": "NODE_ENV=production drizzle-kit migrate",
-		"prod-migrate2": "tsx ./drizzle/prod-migration.ts",
+		"dev-seed": "NODE_ENV=development tsx ./drizzle/dev.seed.ts",
 		"tsx": "tsx"
 	},
 	"dependencies": {
+		"@faker-js/faker": "^8.4.1",
 		"@fontsource/fira-sans": "^5.0.21",
 		"@fontsource/ubuntu-mono": "^5.0.20",
 		"@libsql/client": "^0.9.0",
