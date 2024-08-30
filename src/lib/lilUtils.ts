@@ -30,3 +30,34 @@ export async function to <T,> (promise: Promise<T>) {
 		return result
 	}
 }
+
+export interface numFormatConfig {
+	style?: 'currency'|'decimal'
+	min?: number,
+	max?: number
+}
+
+export const numFormat = (num:number|null|undefined, config:numFormatConfig = {}):string|null => {
+	if (!num) return ''
+
+	const formatter = new Intl.NumberFormat('en-US', {
+		style: config.style ?? 'currency',
+		currency: 'USD',
+
+		// These options are needed to round to whole numbers if that's what you want.
+		minimumFractionDigits: config.min ?? 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+		maximumFractionDigits: config.max ?? 2, // (causes 2500.99 to be printed as $2,501)
+	})
+
+	return formatter.format(num)
+}
+
+export const centsToDollars = (num:number|null|undefined):string|null => {
+	if (!num) return ''
+	const dollars = num / 100
+	const config = {
+		min: 2
+	}
+
+	return numFormat(dollars, config)
+}
