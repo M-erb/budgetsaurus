@@ -13,6 +13,11 @@ export default (pollen) => ({
 			display: `"Fira Sans", ${fontStack}`,
 			body: `"Fira Sans", ${fontStack}`,
 			mono: `"Ubuntu Mono", ${fontStack}`
+		},
+		radius: {
+			...pollen.radius,
+			xl: '18px',
+			xxl: '28px'
 		}
 	}
 })

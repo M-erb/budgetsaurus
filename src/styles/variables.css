@@ -115,8 +115,9 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
+  --radius-xxl: 28px;
   --blur-xs: blur(4px);
   --blur-sm: blur(8px);
   --blur-md: blur(16px);
