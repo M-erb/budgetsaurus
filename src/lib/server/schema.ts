@@ -7,36 +7,35 @@ export const users = sqliteTable('users', {
 	name: text('name').notNull(),
 	email: text('email').notNull(),
 	pass: text('pass').notNull(),
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
 export const cats = sqliteTable('categories', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
 	note: text('note'),
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
+})
 })
 
 export const shareGroups = sqliteTable('shareGroups', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	defaultValue: integer('defaultValue').notNull(),
 	note: text('note'),
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
 export const years = sqliteTable('years', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	name: text('name').notNull().unique(),
-	note: text('note'),
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	note: text('note')
 })
 
 export const months = sqliteTable('months', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	yearId: integer('yearId').references(() => years.id).notNull(),
 	name: text('name').notNull(),
-	note: text('note'),
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	note: text('note')
 })
 
 export const transactions = sqliteTable('transactions', {
@@ -46,7 +45,7 @@ export const transactions = sqliteTable('transactions', {
 	name: text('name').notNull(),
 	note: text('note'),
 	amount: integer('amount', { mode: 'number' }).notNull(), // amount in cents, will convert to dollars as needed to prevent odd floating point inconsistentcies
-	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`)
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
 // relations --------------------
