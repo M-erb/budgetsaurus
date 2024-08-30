@@ -2,13 +2,14 @@ import { error } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
 import { db } from '$lib/server/db'
 import { to } from '@/lib/lilUtils'
-import { getMonthsCatsTotals } from '$lib/server/queries/getMonthsCatsTotals'
+import { getMonthBudgetReport } from '$lib/server/queries/getMonthReports'
 
 export const load: PageServerLoad = async ({ params }) => {
 	console.log('params: ', params)
 	const { res: month, err: errMonth } = await to(db.query.months.findFirst({
 		where: ((months, { eq }) => eq(months.id, Number(params.id))),
 		with: {
+			year: true,
 			transactions: {
 				with: {
 					cat: true
@@ -23,10 +24,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		error(500, { message: 'something went wrong' })
 	}
 
-	const monthsCatsTotals = await getMonthsCatsTotals(month.yearId, month.id)
+	const monthlyReport = await getMonthBudgetReport(month.yearId, month.id)
 
 	return {
 		month,
-		monthsCatsTotals
+		monthlyReport
 	}
 }
