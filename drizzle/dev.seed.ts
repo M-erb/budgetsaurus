@@ -87,6 +87,17 @@ async function seed() {
 		}
 	}
 
+	// Seed budgets
+  for (const month of monthsData) {
+    for (const category of categories) {
+      await db.insert(schema.budgets).values({
+        catId: category.id!,
+        monthId: month.id!,
+        amount: faker.number.int({ min: 10000, max: 100000 })
+      })
+    }
+  }
+
 	// Seed transactions
 	for (const month of monthsData) {
 		const transactionCount = faker.number.int({ min: 20, max: 50 })

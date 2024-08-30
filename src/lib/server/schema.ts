@@ -16,6 +16,12 @@ export const cats = sqliteTable('categories', {
 	note: text('note'),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
+
+export const budgets = sqliteTable('budgets', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	catId: integer('catId').references(() => cats.id).notNull(),
+	monthId: integer('monthId').references(() => months.id).notNull(),
+	amount: integer('amount', { mode: 'number' }).notNull(), // amount in cents, will convert to dollars as needed to prevent odd floating point inconsistentcies
 })
 
 export const shareGroups = sqliteTable('shareGroups', {
@@ -58,7 +64,8 @@ export const monthsRelations = relations(months, ({ many, one }) => ({
 	year: one(years, {
 		fields: [months.yearId],
 		references: [years.id]
-	})
+	}),
+	budgets: many(budgets)
 }))
 
 export const transactionRelations = relations(transactions, ({ one }) => ({
@@ -69,5 +76,21 @@ export const transactionRelations = relations(transactions, ({ one }) => ({
 	cat: one(cats, {
 		fields: [transactions.catId],
 		references: [cats.id]
+	})
+}))
+
+export const catsRelations = relations(cats, ({ many }) => ({
+	transactions: many(transactions),
+	budgets: many(budgets)
+}))
+
+export const budgetRelations = relations(budgets, ({ one }) => ({
+	category: one(cats, {
+		fields: [budgets.catId],
+		references: [cats.id]
+	}),
+	month: one(months, {
+		fields: [budgets.monthId],
+		references: [months.id]
 	})
 }))
