@@ -1,9 +1,73 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1e51fb9b-0bb6-4c7a-8bdb-f3271e025d10",
+  "id": "d169f0ca-0d96-4800-bea5-70df30dfa13e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "budgets": {
+      "name": "budgets",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "catId": {
+          "name": "catId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "monthId": {
+          "name": "monthId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "budgets_catId_categories_id_fk": {
+          "name": "budgets_catId_categories_id_fk",
+          "tableFrom": "budgets",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "catId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "budgets_monthId_months_id_fk": {
+          "name": "budgets_monthId_months_id_fk",
+          "tableFrom": "budgets",
+          "tableTo": "months",
+          "columnsFrom": [
+            "monthId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "categories": {
       "name": "categories",
       "columns": {
@@ -34,7 +98,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "(unixepoch())"
         }
       },
       "indexes": {},
@@ -72,14 +136,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
         }
       },
       "indexes": {},
@@ -131,7 +187,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "(unixepoch())"
         }
       },
       "indexes": {},
@@ -190,7 +246,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "(unixepoch())"
         }
       },
       "indexes": {},
@@ -225,8 +281,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user": {
-      "name": "user",
+    "users": {
+      "name": "users",
       "columns": {
         "id": {
           "name": "id",
@@ -262,7 +318,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "(unixepoch())"
         }
       },
       "indexes": {},
@@ -293,17 +349,17 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "years_name_unique": {
+          "name": "years_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
