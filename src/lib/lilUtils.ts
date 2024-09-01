@@ -53,7 +53,7 @@ export const numFormat = (num:number|null|undefined, config:numFormatConfig = {}
 }
 
 export const centsToDollars = (num:number|null|undefined):string|null => {
-	if (!num) return ''
+	if (!num) return '$0'
 	const dollars = num / 100
 	const config = {
 		min: 2
