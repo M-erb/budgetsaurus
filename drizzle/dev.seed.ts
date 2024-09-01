@@ -107,7 +107,7 @@ async function seed() {
 				catId: faker.helpers.arrayElement(categories).id!,
 				name: faker.finance.transactionDescription(),
 				note: faker.lorem.sentence(),
-				amount: faker.number.int({ min: 100, max: 100000 }), // Amount in cents
+				amount: faker.number.int({ min: 100, max: 60000 }), // Amount in cents
 			})
 		}
 	}
