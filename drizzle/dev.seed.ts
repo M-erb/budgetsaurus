@@ -100,7 +100,7 @@ async function seed() {
 
 	// Seed transactions
 	for (const month of monthsData) {
-		const transactionCount = faker.number.int({ min: 20, max: 50 })
+		const transactionCount = faker.number.int({ min: 10, max: 40 })
 		for (let i = 0; i < transactionCount; i++) {
 			await db.insert(schema.transactions).values({
 				monthId: month.id!,
