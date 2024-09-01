@@ -61,3 +61,15 @@ export const centsToDollars = (num:number|null|undefined):string|null => {
 
 	return numFormat(dollars, config)
 }
+
+export const isNegative = (num:number):boolean => {
+	if (Math.sign(num) === -1) return true
+
+	return false
+}
+
+export const isPositive = (num:number):boolean => {
+	if (Math.sign(num) === 1) return true
+
+	return false
+}
