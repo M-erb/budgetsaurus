@@ -45,8 +45,8 @@ export const numFormat = (num:number|null|undefined, config:numFormatConfig = {}
 		currency: 'USD',
 
 		// These options are needed to round to whole numbers if that's what you want.
-		minimumFractionDigits: config.min ?? 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-		maximumFractionDigits: config.max ?? 2, // (causes 2500.99 to be printed as $2,501)
+		minimumFractionDigits: config.min ?? 0,
+		maximumFractionDigits: config.max ?? 2
 	})
 
 	return formatter.format(num)
