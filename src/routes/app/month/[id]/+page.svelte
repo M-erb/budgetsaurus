@@ -24,7 +24,7 @@
 </section>
 
 <section class="container_sm">
-	<div class="cats_report sub_area">
+	<div class="sub_area">
 		<h2 class="h4 sec_title">Categories</h2>
 
 		<table class="cat_report">
@@ -85,12 +85,31 @@
 	</div>
 </section>
 
+<section class="container_sm">
+	<div class="sub_area">
+		<h2 class="h4 sec_title">Transactions</h2>
+
+		<div class="transac_list">
+			{#each data.month.transactions as item}
+				<div class="transac_item">
+					<div class="item_name">
+						<span>{item.name}</span>
+					</div>
+					<div class="item_amount">
+						<span>{centsToDollars(item.amount)}</span>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+</section>
+
 <style lang="postcss">
 	.month_title {
 		text-align: center;
 	}
 
-	.cats_report {
+	.sub_area {
 		max-width: 880px;
 		margin-left: auto;
 		margin-right: auto;
