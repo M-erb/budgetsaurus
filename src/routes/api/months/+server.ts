@@ -9,7 +9,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (jsonErr) error(401, 'Bad request')
 	console.error('jsonErr: ', jsonErr)
 
-	console.log('data: ', data)
 	const res = await saveYearMonthDb(data)
 
 	return json(res)
@@ -32,7 +31,6 @@ async function saveYearMonthDb ({ year:yearName, month:monthName }:{ year:number
 	}))
 
 	console.error('errYearFromDb: ', errYearFromDb)
-	console.log('yearFromDb: ', yearFromDb)
 
 	if (!yearFromDb) {
 		const {res: resNewYear, err: errNewYear} = await to(db.insert(years).values({name: String(yearName), note: ''}).returning())

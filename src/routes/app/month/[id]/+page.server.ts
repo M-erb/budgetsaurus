@@ -5,7 +5,6 @@ import { to } from '@/lib/lilUtils'
 import { getMonthBudgetReport } from '$lib/server/queries/getMonthReports'
 
 export const load: PageServerLoad = async ({ params }) => {
-	console.log('params: ', params)
 	const { res: month, err: errMonth } = await to(db.query.months.findFirst({
 		where: ((months, { eq }) => eq(months.id, Number(params.id))),
 		with: {
