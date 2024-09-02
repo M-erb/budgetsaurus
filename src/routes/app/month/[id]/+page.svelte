@@ -79,14 +79,26 @@
 	<div class="sub_area">
 		<h2 class="h4 sec_title">Transactions</h2>
 
-		<div class="transac_list">
+		<div class="flex_table tran_list">
+			<div class="ft_row __header">
+				<div class="ft_col tran_name"></div>
+				<div class="ft_col tran_amount">
+					<span class="label">Amount</span>
+				</div>
+				<div class="ft_col tran_cat">
+					<span class="label">Category</span>
+				</div>
+			</div>
 			{#each data.month.transactions as item}
-				<div class="transac_item">
-					<div class="item_name">
+				<div class="ft_row">
+					<div class="ft_col tran_name">
 						<span>{item.name}</span>
 					</div>
-					<div class="item_amount">
+					<div class="ft_col tran_amount tran_num">
 						<span>{centsToDollars(item.amount)}</span>
+					</div>
+					<div class="ft_col tran_cat">
+						<span>{item.cat.name}</span>
 					</div>
 				</div>
 			{/each}
@@ -112,8 +124,6 @@
 	}
 
 	.cat_report {
-		width: 100%;
-
 		.cat_item {
 			.ft_col {
 				&.__colors {
@@ -143,6 +153,29 @@
 			.cat_icon {
 				flex-basis: 5%;
 				text-align: right;
+			}
+		}
+	}
+
+	.tran_list {
+		.ft_row {
+			.tran_name {
+				flex-basis: 65%;
+			}
+
+			.tran_amount {
+				flex-basis: 15%;
+				text-align: right;
+			}
+
+			.tran_cat {
+				flex-basis: 20%;
+				text-align: right;
+			}
+
+			.tran_num {
+				font-family: var(--font-mono);
+				font-size: var(--scale-2);
 			}
 		}
 	}
