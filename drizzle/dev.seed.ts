@@ -105,9 +105,9 @@ async function seed() {
 			await db.insert(schema.transactions).values({
 				monthId: month.id!,
 				catId: faker.helpers.arrayElement(categories).id!,
-				name: faker.finance.transactionDescription(),
+				name: faker.lorem.words({min: 3, max: 10}),
 				note: faker.lorem.sentence(),
-				amount: faker.number.int({ min: 100, max: 60000 }), // Amount in cents
+				amount: faker.number.int({ min: 100, max: 20000 }), // Amount in cents
 			})
 		}
 	}
