@@ -34,6 +34,7 @@ async function seed() {
 			const newCategory = await db.insert(schema.cats).values({
 				name,
 				note: faker.lorem.sentence(),
+				color: faker.color.rgb({ format: 'hex' })
 			}).returning().get()
 			categories.push(newCategory)
 		}

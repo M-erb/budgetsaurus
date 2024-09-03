@@ -14,6 +14,7 @@ export const cats = sqliteTable('categories', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
 	note: text('note'),
+	color: text('color').notNull(),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
