@@ -29,6 +29,7 @@
 
 		<div class="cat_report flex_table">
 			<div class="cat_item ft_row __header">
+				<div class="ft_col cat_color"></div>
 				<div class="ft_col cat_name"></div>
 				<div class="ft_col cat_result">
 					<span class="label">Spent</span>
@@ -46,9 +47,12 @@
 				{@const difference = (cat.budgetAmount ?? 0) - cat.totalAmount}
 				{@const isDiffNeg = isNegative(difference)}
 				<div class="ft_row cat_item">
+					<div class="ft_col cat_color">
+						<div class="color_box" style:background-color={cat.catColor}></div>
+					</div>
 					<div class="ft_col cat_name">
 						<span class="label">Name</span>
-						<span>{cat.categoryName}</span>
+						<span>{cat.catName}</span>
 					</div>
 					<div class="ft_col cat_num cat_result">
 						<span class="label">Spent</span>
@@ -81,24 +85,28 @@
 
 		<div class="flex_table tran_list">
 			<div class="ft_row __header">
+				<div class="ft_col tran_color"></div>
+				<div class="ft_col tran_cat">
+					<span class="label">Category</span>
+				</div>
 				<div class="ft_col tran_name"></div>
 				<div class="ft_col tran_amount">
 					<span class="label">Amount</span>
 				</div>
-				<div class="ft_col tran_cat">
-					<span class="label">Category</span>
-				</div>
 			</div>
 			{#each data.month.transactions as item}
 				<div class="ft_row">
+					<div class="ft_col tran_color">
+						<div class="color_box" style:background-color={item.cat.color}></div>
+					</div>
+					<div class="ft_col tran_cat">
+						<span>{item.cat.name}</span>
+					</div>
 					<div class="ft_col tran_name">
 						<span>{item.name}</span>
 					</div>
 					<div class="ft_col tran_amount tran_num">
 						<span>{centsToDollars(item.amount)}</span>
-					</div>
-					<div class="ft_col tran_cat">
-						<span>{item.cat.name}</span>
 					</div>
 				</div>
 			{/each}
@@ -135,6 +143,16 @@
 				}
 			}
 
+			.cat_color {
+				flex-basis: 3%;
+
+				.color_box {
+					width: 24px;
+					height: 24px;
+					border-radius: var(--radius-full);
+				}
+			}
+
 			.cat_name {
 				flex-basis: 45%;
 				font-size: var(--scale-3);
@@ -159,8 +177,18 @@
 
 	.tran_list {
 		.ft_row {
+			.tran_color {
+				flex-basis: 3%;
+
+				.color_box {
+					width: 24px;
+					height: 24px;
+					border-radius: var(--radius-full);
+				}
+			}
+
 			.tran_name {
-				flex-basis: 65%;
+				flex-basis: 60%;
 			}
 
 			.tran_amount {
@@ -169,8 +197,7 @@
 			}
 
 			.tran_cat {
-				flex-basis: 20%;
-				text-align: right;
+				flex-basis: 15%;
 			}
 
 			.tran_num {
