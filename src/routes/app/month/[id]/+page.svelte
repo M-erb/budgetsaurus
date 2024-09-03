@@ -1,11 +1,64 @@
 <script lang="ts">
 	import type { PageServerData } from './$types'
-	import { centsToDollars, isNegative } from '$lib/lilUtils'
+	import { onMount } from 'svelte'
+	import { browser } from '$app/environment'
+	import { centsToDollars, isNegative, numFormat } from '$lib/lilUtils'
 	import ThumbsDown from '@/lib/icons/thumbs-down.svelte'
 	import ThumbsUp from '@/lib/icons/thumbs-up.svelte'
 	import { format as formatDate } from 'date-fns'
+	import { Chart, DoughnutController, ArcElement, Legend, Tooltip } from 'chart.js'
+	import type { ChartType } from 'chart.js'
+
+	Chart.register(DoughnutController, ArcElement, Legend, Tooltip)
+	Chart.defaults.color = '#fff'
+	Chart.overrides.doughnut.plugins.legend.labels = {
+		...Chart.overrides.doughnut.plugins.legend.labels,
+		usePointStyle: true,
+		padding: 20,
+		color: '#fff'
+	}
 
 	export let data:PageServerData
+
+	let catChartEl:HTMLCanvasElement
+	const chartData = {
+		type: 'doughnut' as ChartType,
+		data: {
+			labels: data.monthlyReport.map(cat => cat.catName!),
+			datasets: [{
+				data: data.monthlyReport.map(cat => Number(numFormat(cat.totalAmount! / 100, {style: 'decimal'}))),
+				backgroundColor: data.monthlyReport.map(cat => cat.catColor!)
+			}],
+			options: {
+				plugins: {
+					legend: {
+						position: 'chartArea',
+						align: 'center',
+						display: true,
+						labels: {
+							usePointStyle: true,
+							pointStyle: 'circle',
+							padding: 20,
+							color: '#fff',
+							font: {
+								size: 24,
+								family: 'var(--font-body)'
+							}
+						}
+					},
+					tooltip: {
+						bodyColor: 'transparent'
+					}
+				}
+			}
+		}
+	}
+
+	onMount(() => {
+		if (browser) {
+			new Chart(catChartEl, chartData)
+		}
+	})
 </script>
 
 <section class="">
@@ -26,7 +79,11 @@
 
 <section class="container_sm">
 	<div class="sub_area">
-		<h2 class="h4 sec_title">Categories</h2>
+		<!-- <h2 class="h4 sec_title">Categories</h2> -->
+
+		<div class="cat_chart">
+			<canvas bind:this={catChartEl}></canvas>
+		</div>
 
 		<div class="cat_report flex_table">
 			<div class="cat_item ft_row __header">
@@ -133,6 +190,10 @@
 		.sec_title {
 			margin-bottom: var(--size-4);
 		}
+	}
+
+	.cat_chart {
+		margin-bottom: var(--size-8);
 	}
 
 	.cat_report {
