@@ -15,6 +15,13 @@
       "when": 1725318678342,
       "tag": "0001_damp_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1725350840486,
+      "tag": "0002_needy_lilandra",
+      "breakpoints": true
     }
   ]
 }

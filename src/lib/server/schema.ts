@@ -52,6 +52,7 @@ export const transactions = sqliteTable('transactions', {
 	name: text('name').notNull(),
 	note: text('note'),
 	amount: integer('amount', { mode: 'number' }).notNull(), // amount in cents, will convert to dollars as needed to prevent odd floating point inconsistentcies
+	date: integer('date', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 

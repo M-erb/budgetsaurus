@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker'
 import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import * as schema from '../src/lib/server/schema'
+import { lastDayOfMonth } from 'date-fns'
 
 const TURSO_URL = process.env.TURSO_URL!
 const TURSO_AUTH = process.env.TURSO_AUTH
@@ -89,26 +90,30 @@ async function seed() {
 	}
 
 	// Seed budgets
-  for (const month of monthsData) {
-    for (const category of categories) {
-      await db.insert(schema.budgets).values({
-        catId: category.id!,
-        monthId: month.id!,
-        amount: faker.number.int({ min: 10000, max: 100000 })
-      })
-    }
-  }
+	for (const month of monthsData) {
+		for (const category of categories) {
+			await db.insert(schema.budgets).values({
+				catId: category.id!,
+				monthId: month.id!,
+				amount: faker.number.int({ min: 10000, max: 100000 })
+			})
+		}
+	}
 
 	// Seed transactions
-	for (const month of monthsData) {
+	const monthsList = await db.query.months.findMany({ with: { year: true } })
+	for (const month of monthsList) {
 		const transactionCount = faker.number.int({ min: 10, max: 40 })
 		for (let i = 0; i < transactionCount; i++) {
+			const start = new Date(`${month.year.name}-${month.name}-01`)
+			const date = faker.date.between({ from: start, to: lastDayOfMonth(start) })
 			await db.insert(schema.transactions).values({
 				monthId: month.id!,
 				catId: faker.helpers.arrayElement(categories).id!,
 				name: faker.lorem.words({min: 3, max: 10}),
 				note: faker.lorem.sentence(),
 				amount: faker.number.int({ min: 100, max: 20000 }), // Amount in cents
+				date
 			})
 		}
 	}
