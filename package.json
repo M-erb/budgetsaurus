@@ -26,6 +26,7 @@
 		"@fontsource/fira-sans": "^5.0.21",
 		"@fontsource/ubuntu-mono": "^5.0.20",
 		"@libsql/client": "^0.9.0",
+		"chart.js": "^4.4.4",
 		"date-fns": "^3.6.0",
 		"drizzle-orm": "^0.33.0",
 		"pollen-css": "^5.0.1",
