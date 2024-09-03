@@ -12,7 +12,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			transactions: {
 				with: {
 					cat: true
-				}
+				},
+				orderBy: (transactions, { desc }) => [desc(transactions.date)]
 			}
 		}
 	}))
