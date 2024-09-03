@@ -3,6 +3,7 @@
 	import { centsToDollars, isNegative } from '$lib/lilUtils'
 	import ThumbsDown from '@/lib/icons/thumbs-down.svelte'
 	import ThumbsUp from '@/lib/icons/thumbs-up.svelte'
+	import { format as formatDate } from 'date-fns'
 
 	export let data:PageServerData
 </script>
@@ -105,6 +106,9 @@
 					<div class="ft_col tran_name">
 						<span>{item.name}</span>
 					</div>
+					<div class="ft_col tran_date">
+						<span>{formatDate(item.date ?? '', 'MMM dd')}</span>
+					</div>
 					<div class="ft_col tran_amount tran_num">
 						<span>{centsToDollars(item.amount)}</span>
 					</div>
@@ -196,8 +200,12 @@
 				text-align: right;
 			}
 
+			.tran_date {
+				flex-basis: 8%;
+			}
+
 			.tran_cat {
-				flex-basis: 15%;
+				flex-basis: 14%;
 			}
 
 			.tran_num {
