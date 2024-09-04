@@ -27,7 +27,7 @@ export const budgets = sqliteTable('budgets', {
 
 export const shareGroups = sqliteTable('shareGroups', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-	defaultValue: integer('defaultValue').notNull(),
+	name: text('name').notNull(),
 	note: text('note'),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
@@ -56,6 +56,15 @@ export const transactions = sqliteTable('transactions', {
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
+export const shareTransactions = sqliteTable('shareTransactions', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	shareGroupId: integer('shareGroupId').references(() => shareGroups.id).notNull(),
+	tranId: integer('tranId').references(() => transactions.id).notNull(),
+	note: text('note'),
+	amount: integer('amount', { mode: 'number' }).notNull(), // amount to take away from the transaction it is related with, aka how much it shares with the transaction
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
+})
+
 // relations --------------------
 export const yearRelations = relations(years, ({ many }) => ({
 	months: many(months)
@@ -70,7 +79,7 @@ export const monthsRelations = relations(months, ({ many, one }) => ({
 	budgets: many(budgets)
 }))
 
-export const transactionRelations = relations(transactions, ({ one }) => ({
+export const transactionRelations = relations(transactions, ({ one, many }) => ({
 	month: one(months, {
 		fields: [transactions.monthId],
 		references: [months.id],
@@ -78,6 +87,18 @@ export const transactionRelations = relations(transactions, ({ one }) => ({
 	cat: one(cats, {
 		fields: [transactions.catId],
 		references: [cats.id]
+	}),
+	shares: many(shareTransactions)
+}))
+
+export const shareTransactionRelations = relations(shareTransactions, ({ one }) => ({
+	transaction: one(transactions, {
+		fields: [shareTransactions.tranId],
+		references: [transactions.id]
+	}),
+	shareGroup: one(shareGroups, {
+		fields: [shareTransactions.shareGroupId],
+		references: [shareGroups.id]
 	})
 }))
 

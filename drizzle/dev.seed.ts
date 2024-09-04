@@ -46,7 +46,7 @@ async function seed() {
 	const shareGroupsCount = 2
 	for (let i = 0; i < shareGroupsCount; i++) {
 		const newShareGroup = await db.insert(schema.shareGroups).values({
-			defaultValue: faker.number.int({ min: 1, max: 100 }),
+			name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 			note: faker.lorem.sentence(),
 		}).returning().get()
 		shareGroupsData.push(newShareGroup)
@@ -107,18 +107,32 @@ async function seed() {
 		for (let i = 0; i < transactionCount; i++) {
 			const start = new Date(`${month.year.name}-${month.name}-01`)
 			const date = faker.date.between({ from: start, to: lastDayOfMonth(start) })
-			await db.insert(schema.transactions).values({
+			const randoCat = faker.helpers.arrayElement(categories)
+			const newTransaction = await db.insert(schema.transactions).values({
 				monthId: month.id!,
-				catId: faker.helpers.arrayElement(categories).id!,
+				catId: randoCat.id!,
 				name: faker.lorem.words({min: 3, max: 10}),
 				note: faker.lorem.sentence(),
 				amount: faker.number.int({ min: 100, max: 20000 }), // Amount in cents
 				date
-			})
+			}).returning().get()
+
+			if (randoCat.name === 'Groceries') {
+				const randoShareGroup = faker.helpers.arrayElement(shareGroupsData)
+
+				await db.insert(schema.shareTransactions).values({
+					shareGroupId: randoShareGroup.id!,
+					tranId: newTransaction.id,
+					note: faker.lorem.sentence(),
+					amount: Math.round(newTransaction.amount/2) // half of transaction amount
+				})
+			}
 		}
 	}
 
+	console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
 	console.log('Seeding completed successfully!')
+	console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
 }
 
 seed().catch(console.error)
