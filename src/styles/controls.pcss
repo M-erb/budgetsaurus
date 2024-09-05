@@ -144,8 +144,16 @@ label {
 
 	&:hover {
 		text-decoration: none;
-		color: var(--color-black);
-		background-color: var(--color-blue-700);
+		background-color: var(--color-blue-300);
+	}
+
+	&.__active {
+		color: var(--color-grey-700);
+		background-color: var(--color-white);
+
+		&:hover {
+			background-color: var(--color-slate-200);
+		}
 	}
 
 	&.__on_dark:hover:hover {
