@@ -11,7 +11,12 @@ export const load: PageServerLoad = async ({ params }) => {
 			year: true,
 			transactions: {
 				with: {
-					cat: true
+					cat: true,
+					shares: {
+						with: {
+							shareGroup: true
+						}
+					}
 				},
 				orderBy: (transactions, { desc }) => [desc(transactions.date)]
 			}

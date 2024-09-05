@@ -1,5 +1,5 @@
 import { eq, and, sql } from 'drizzle-orm'
-import { months, transactions, cats, years, budgets } from '$lib/server/schema'
+import { months, transactions, cats, years, budgets, shareTransactions } from '$lib/server/schema'
 import { db } from '$lib/server/db'
 
 export const getMonthsCatsTotals = async (yearId:number, monthId:number) => {
@@ -25,7 +25,7 @@ export const getMonthsCatsTotals = async (yearId:number, monthId:number) => {
 			)
 		)
 		.groupBy(years.id, years.name, months.id, months.name, cats.id, cats.name)
-		.orderBy(cats.id)
+		.orderBy(cats.name)
 
 	return result
 }
@@ -41,6 +41,7 @@ export const getMonthBudgetReport = async (yearId:number, monthId:number) => {
 			catName: cats.name,
 			catColor: cats.color,
 			totalAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`,
+			totalShared: sql<number>`COALESCE(SUM(${shareTransactions.amount}), 0)`,
 			budgetAmount: budgets.amount,
 		})
 		.from(years)
@@ -50,6 +51,7 @@ export const getMonthBudgetReport = async (yearId:number, monthId:number) => {
 			eq(transactions.monthId, months.id),
 			eq(transactions.catId, cats.id)
 		))
+		.leftJoin(shareTransactions, eq(shareTransactions.tranId, transactions.id))
 		.leftJoin(budgets, and(
 			eq(budgets.monthId, months.id),
 			eq(budgets.catId, cats.id)
