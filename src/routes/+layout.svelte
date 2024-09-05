@@ -10,4 +10,12 @@
 	import '@styles/main.pcss'
 </script>
 
-<slot></slot>
+<div class="page">
+	<slot></slot>
+</div>
+
+<style>
+	.page {
+		margin-bottom: var(--size-24);
+	}
+</style>
