@@ -130,7 +130,7 @@
 			}
 
 			.tran_cat {
-				flex-basis: 14%;
+				flex-basis: 17%;
 			}
 
 			.tran_num {
