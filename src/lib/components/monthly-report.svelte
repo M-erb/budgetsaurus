@@ -4,7 +4,6 @@
 	import { centsToDollars, isNegative, numFormat } from '$lib/lilUtils'
 	import ThumbsDown from '@/lib/icons/thumbs-down.svelte'
 	import ThumbsUp from '@/lib/icons/thumbs-up.svelte'
-	import { format as formatDate } from 'date-fns'
 	import { Chart, DoughnutController, ArcElement, Legend, Tooltip } from 'chart.js'
 	import type { ChartType } from 'chart.js'
 
@@ -36,7 +35,7 @@
 		data: {
 			labels: monthlyReport.map(cat => cat.catName!),
 			datasets: [{
-				data: monthlyReport.map(cat => Number(numFormat(cat.totalAmount! / 100, {style: 'decimal'}))),
+				data: monthlyReport.map(cat => Number(numFormat((cat.totalAmount! - cat.totalShared) / 100, {style: 'decimal'}))),
 				backgroundColor: monthlyReport.map(cat => cat.catColor!)
 			}],
 			options: {
@@ -106,15 +105,15 @@
 						<span class="label">Name</span>
 						<span>{cat.catName}</span>
 					</div>
-					<div class="ft_col cat_num cat_result">
+					<div class="ft_col __num cat_result">
 						<span class="label">Spent</span>
 						<span>{centsToDollars(totalAmount)}</span>
 					</div>
-					<div class="ft_col cat_num cat_result">
+					<div class="ft_col __num cat_result">
 						<span class="label">Budget</span>
 						<span>{centsToDollars(cat.budgetAmount)}</span>
 					</div>
-					<div class="ft_col cat_num cat_result __colors" class:__negative={isDiffNeg}>
+					<div class="ft_col __num cat_result __colors" class:__negative={isDiffNeg}>
 						<span class="label">Remaining</span>
 						<span>{centsToDollars(difference)}</span>
 					</div>
@@ -131,11 +130,56 @@
 	</div>
 </section>
 
+<section class="container_sm">
+	<div class="sub_area">
+		<div class="title_area">
+			<h2>Shared Report:</h2>
+		</div>
+		<div class="share_report flex_table">
+			<div class="ft_row __header">
+				<div class="ft_col __color"></div>
+				<div class="ft_col __name"></div>
+				<div class="ft_col __result">
+					<span class="label">Owes You</span>
+				</div>
+			</div>
+
+			{#each monthlyReport as cat }
+				{@const totalAmount = cat.totalShared ?? 0}
+				<div class="ft_row">
+					<div class="ft_col __color">
+						<div class="color_box" style:background-color={cat.catColor}></div>
+					</div>
+					<div class="ft_col __name">
+						<span class="label">Name</span>
+						<span>{cat.catName}</span>
+					</div>
+					<div class="ft_col __num __result">
+						<span class="label">Owes You</span>
+						<span>{centsToDollars(totalAmount)}</span>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+</section>
+
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
 
 	.cat_chart {
 		margin-bottom: var(--size-8);
+	}
+
+	.color_box {
+		width: 24px;
+		height: 24px;
+		border-radius: var(--radius-full);
+	}
+
+	.__num {
+		font-family: var(--font-mono);
+		font-size: var(--scale-2);
 	}
 
 	.cat_report {
@@ -152,22 +196,11 @@
 
 			.cat_color {
 				flex-basis: 3%;
-
-				.color_box {
-					width: 24px;
-					height: 24px;
-					border-radius: var(--radius-full);
-				}
 			}
 
 			.cat_name {
 				flex-basis: 45%;
 				font-size: var(--scale-3);
-			}
-
-			.cat_num {
-				font-family: var(--font-mono);
-				font-size: var(--scale-2);
 			}
 
 			.cat_result {
@@ -177,6 +210,24 @@
 
 			.cat_icon {
 				flex-basis: 5%;
+				text-align: right;
+			}
+		}
+	}
+
+	.share_report {
+		.ft_row {
+			.cat_color {
+				flex-basis: 3%;
+			}
+
+			.__name {
+				flex-basis: 70%;
+				font-size: var(--scale-3);
+			}
+
+			.__result {
+				flex-basis: 20%;
 				text-align: right;
 			}
 		}
