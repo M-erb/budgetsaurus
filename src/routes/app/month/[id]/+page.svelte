@@ -2,6 +2,7 @@
 	import type { PageServerData } from './$types'
 	import MonthlyReportArea from '$lib/components/monthly-report.svelte'
 	import MonthlyTransactions from '$lib/components/monthly-transactions.svelte'
+	import MonthlyIncomes from '$lib/components/monthly-incomes.svelte'
 	import { page } from '$app/stores'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
@@ -43,11 +44,15 @@
 			</nav>
 		</div>
 	</section>
-	
+
+	{#if curTab === 'income' }
+		<MonthlyIncomes month={data.month} />
+	{/if}
+
 	{#if curTab === 'report' }
 		<MonthlyReportArea monthlyReport={data.monthlyReport} />
 	{/if}
-		
+
 	{#if curTab === 'tran' }
 		<MonthlyTransactions month={data.month} />
 	{/if}
