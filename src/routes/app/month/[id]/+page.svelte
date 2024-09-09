@@ -2,9 +2,23 @@
 	import type { PageServerData } from './$types'
 	import MonthlyReportArea from '$lib/components/monthly-report.svelte'
 	import MonthlyTransactions from '$lib/components/monthly-transactions.svelte'
+	import { page } from '$app/stores'
+	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
 
 	export let data:PageServerData
-	let curTab = 'report'
+	let curTab = $page.url.searchParams.get('tab') ?? 'report'
+
+	function tabNav (tabName:string) {
+		$page.url.searchParams.set('tab', tabName)
+		const paramsString = $page.url.searchParams.toString()
+		curTab = tabName
+		goto(`?${paramsString}`)
+	}
+
+	onMount(() => {
+		if (!$page.url.searchParams.get('tab')) tabNav(curTab)
+	})
 </script>
 
 <main>
@@ -23,9 +37,9 @@
 			</div>
 	
 			<nav class="month_nav">
-				<button class="btn" class:__active={curTab === 'income'} on:click={() => curTab = 'income'}>Income</button>
-				<button class="btn" class:__active={curTab === 'report'} on:click={() => curTab = 'report'}>Report</button>
-				<button class="btn" class:__active={curTab === 'tran'} on:click={() => curTab = 'tran'}>Transactions</button>
+				<button class="btn" on:click={() => tabNav('income')} class:__active={curTab === 'income'}>Income</button>
+				<button class="btn" on:click={() => tabNav('report')} class:__active={curTab === 'report'}>Report</button>
+				<button class="btn" on:click={() => tabNav('tran')} class:__active={curTab === 'tran'}>Transactions</button>
 			</nav>
 		</div>
 	</section>
