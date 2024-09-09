@@ -21,6 +21,8 @@
 			budgetAmount: number|null
 	}[]
 
+	let allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
+
 	Chart.register(DoughnutController, ArcElement, Legend, Tooltip)
 	Chart.defaults.color = '#fff'
 	Chart.overrides.doughnut.plugins.legend.labels = {
@@ -165,6 +167,18 @@
 					</div>
 				</div>
 			{/each}
+
+			<div class="ft_row">
+				<div class="ft_col __color"></div>
+				<div class="ft_col __name"></div>
+				<div class="ft_col __result">
+					<span>Total:</span>
+				</div>
+				<div class="ft_col __num __result">
+					<span class="label">Total</span>
+					<span>{centsToDollars(allTotalShared)}</span>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
