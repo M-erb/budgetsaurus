@@ -26,7 +26,7 @@ async function seed() {
 
 	// Seed categories
 	const categories:Array<typeof schema.cats.$inferInsert> = []
-	const categoryNames = ['Groceries', 'Utilities', 'Entertainment', 'Transportation', 'Healthcare', 'Dining Out', 'Shopping']
+	const categoryNames = ['Groceries', 'Utilities', 'Entertainment', 'Transportation', 'Healthcare', 'Dining Out', 'Shopping', 'Savings', 'Giving']
 	const existingCats = await db.query.cats.findMany()
 	if (existingCats.length) {
 		categories.push(...existingCats)
@@ -86,6 +86,22 @@ async function seed() {
 				note: faker.lorem.sentence(),
 			}).returning().get()
 			monthsData.push(newMonth)
+		}
+	}
+
+	// Seed Incomes
+	// const incomeData:Array<typeof schema.incomes.$inferInsert> = []
+	const incomeNames = ['Pay Check', 'Contacts', 'Misc.']
+	for (const month of monthsData) {
+		for (const name of incomeNames) {
+			if (name === 'Misc.' && faker.number.int({ min: 0, max: 1 })) continue
+			await db.insert(schema.incomes).values({
+				monthId: month.id!,
+				name,
+				note: faker.lorem.sentence(),
+				planned: faker.number.int({ min: 100000, max: 400000 }),
+				amount: faker.number.int({ min: 100000, max: 400000 })
+			})
 		}
 	}
 

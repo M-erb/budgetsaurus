@@ -45,6 +45,17 @@ export const months = sqliteTable('months', {
 	note: text('note')
 })
 
+export const incomes = sqliteTable('incomes', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	monthId: integer('monthId').references(() => months.id).notNull(),
+	name: text('name').notNull(),
+	note: text('note'),
+	planned: integer('planned', { mode: 'number' }).notNull(),
+	amount: integer('amount', { mode: 'number' }).notNull(),
+	date: integer('date', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
+})
+
 export const transactions = sqliteTable('transactions', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	monthId: integer('monthId').references(() => months.id).notNull(),
@@ -76,7 +87,15 @@ export const monthsRelations = relations(months, ({ many, one }) => ({
 		fields: [months.yearId],
 		references: [years.id]
 	}),
-	budgets: many(budgets)
+	budgets: many(budgets),
+	incomes: many(incomes)
+}))
+
+export const incomeRelations = relations(incomes, ({ one }) => ({
+	month: one(months, {
+		fields: [incomes.monthId],
+		references: [months.id],
+	})
 }))
 
 export const transactionRelations = relations(transactions, ({ one, many }) => ({
