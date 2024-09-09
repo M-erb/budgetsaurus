@@ -2,8 +2,9 @@
 	import { onMount } from 'svelte'
 	import { browser } from '$app/environment'
 	import { centsToDollars, isNegative, numFormat } from '$lib/lilUtils'
-	import ThumbsDown from '@/lib/icons/thumbs-down.svelte'
-	import ThumbsUp from '@/lib/icons/thumbs-up.svelte'
+	import ThumbsDown from '$lib/icons/thumbs-down.svelte'
+	import ThumbsUp from '$lib/icons/thumbs-up.svelte'
+	import Plus from '$lib/icons/plus.svelte'
 	import { Chart, DoughnutController, ArcElement, Legend, Tooltip } from 'chart.js'
 	import type { ChartType } from 'chart.js'
 
@@ -126,6 +127,10 @@
 					</div>
 				</div>
 			{/each}
+		</div>
+
+		<div class="btn_wrap __left __t_space">
+			<button class="btn"><Plus /><span>Category</span></button>
 		</div>
 	</div>
 </section>

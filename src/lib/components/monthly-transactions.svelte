@@ -2,6 +2,7 @@
 	import { centsToDollars } from '$lib/lilUtils'
 	import { format as formatDate } from 'date-fns'
 	import GroupShare from '$lib/icons/group-share.svelte'
+	import Plus from '$lib/icons/plus.svelte'
 
 	interface shareItem {
 		id: number
@@ -56,7 +57,12 @@
 
 <section class="container_sm">
 	<div class="sub_area">
-		<h2 class="h4 sec_title">Transactions</h2>
+		<div class="sub_head">
+			<h2 class="h4 sec_title">Transactions</h2>
+			<div class="btn_wrap">
+				<button class="btn_round"><Plus /></button>
+			</div>
+		</div>
 		<div class="flex_table tran_list">
 
 			<div class="ft_row __header">
@@ -98,11 +104,23 @@
 				</div>
 			{/each}
 		</div>
+
+		<div class="btn_wrap __left __t_space">
+			<button class="btn"><Plus /><span>Transaction</span></button>
+		</div>
 	</div>
 </section>
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
+
+	.sub_head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--size-4);
+		flex-wrap: wrap;
+	}
 
 	.tran_list {
 		.ft_row {

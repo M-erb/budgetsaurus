@@ -58,8 +58,4 @@
 			flex: 0 0 auto;
 		}
 	}
-
-	.sec_title {
-		margin-bottom: var(--size-4);
-	}
 </style>

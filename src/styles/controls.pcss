@@ -116,7 +116,7 @@ label {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	gap: var(--size-8);
+	gap: var(--size-2);
 	flex: 0 0 auto;
 
 	border: none;
@@ -136,6 +136,7 @@ label {
 	& span {
 		flex: 1 1 auto;
 		line-height: 1;
+		text-align: left;
 	}
 
 	& svg {
@@ -171,7 +172,7 @@ label {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	gap: var(--size-8);
+	gap: var(--size-2);
 	flex: 0 0 auto;
 
 	border: none;
@@ -205,6 +206,43 @@ label {
 	}
 }
 
+.btn_round {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: var(--size-2);
+	flex: 0 0 auto;
+
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--color-blue);
+	padding: var(--size-2);
+	min-width: 52px;
+	min-height: 52px;
+	color: var(--color-white);
+	font-family: Ubuntu, sans-serif;
+	font-weight: 700;
+	font-size: var(--scale-2);
+	text-align: center;
+	text-decoration: none;
+	transition: background-color .3s ease-in-out, color .3s ease-in-out;
+	cursor: pointer;
+
+	& span {
+		flex: 1 1 auto;
+		line-height: 1;
+	}
+
+	& svg {
+		flex: 0 0 auto;
+	}
+
+	&:hover {
+		text-decoration: none;
+		background-color: var(--color-blue-300);
+	}
+}
+
 html[data-theme="dark"] {
 	.btn {
 		&:hover {
@@ -217,6 +255,10 @@ html[data-theme="dark"] {
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
+
+	&.__t_space {
+		margin-top: var(--size-4);
+	}
 
 	&.__right {
 		justify-content: flex-end;
@@ -263,14 +305,6 @@ html[data-theme="dark"] {
 	@media (--lg) {
 		&.__center\:lg {
 			justify-content: center;
-		}
-	}
-}
-
-.mobile_only_control {
-	@media (--md) {
-		& {
-			display: none;
 		}
 	}
 }
