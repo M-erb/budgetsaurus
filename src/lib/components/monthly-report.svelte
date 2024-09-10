@@ -95,24 +95,44 @@
 </script>
 
 <section class="container_sm">
-	<div class="sub_area">
-		<div class="sub_head">
-			<h2 class="h3">Income</h2>
+	<div class="sq_report">
+		<div class="sq_report_row __top">
+			<div class="sq_item">
+				<h3 class="label">Planned Income</h3>
+				<div class="value_area">
+					<span class="value">{centsToDollars(plannedTotalIncomes)}</span>
+				</div>
+			</div>
+			<div
+				class="sq_item"
+				class:__negative={isNegative(plannedTotalIncomes - totalBudget)}
+				class:__positive={!isNegative(plannedTotalIncomes - totalBudget)}>
+				<!-- top right -->
+				<!-- budget (red if more than planned income)-->
+				<h3 class="label">Budget</h3>
+				<div class="value_area">
+					<span class="value">{centsToDollars(totalBudget)}</span>
+				</div>
+			</div>
 		</div>
-
-		<div class="cat_report flex_table">
-			<!-- TODO -->
-			<!-- top left -->
-			<!-- planned income -->
-
-			<!-- top right -->
-			<!-- budget (red if more than planned income)-->
-
-			<!-- bottom left -->
-			<!-- actual income -->
-
-			<!-- bottom right -->
-			<!-- spent (red if more than actual income)-->
+		<div class="sq_report_row __bottom">
+			<div class="sq_item">
+				<h3 class="label">Actual Income</h3>
+				<div class="value_area">
+					<span class="value">{centsToDollars(amountTotalIncomes)}</span>
+				</div>
+			</div>
+			<div
+				class="sq_item"
+				class:__negative={isNegative(amountTotalIncomes - totalSpent)}
+				class:__positive={!isNegative(amountTotalIncomes - totalSpent)}>
+				<!-- bottom right -->
+				<!-- spent (red if more than actual income)-->
+				<h3 class="label">Spent</h3>
+				<div class="value_area">
+					<span class="value">{centsToDollars(totalSpent)}</span>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
@@ -241,6 +261,61 @@
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
+
+	.sq_report {
+		text-align: center;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: stretch;
+		gap: var(--size-4);
+
+		.sq_report_row {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: stretch;
+			gap: var(--size-4);
+
+			.sq_item {
+				background-color: var(--color-grey-800);
+				padding: var(--size-8);
+				border-radius: var(--radius-xl);
+				width: 50%;
+				border: 8px solid var(--color-blue-200);
+
+				.label {
+					font-size: var(--scale-1);
+				}
+
+				.value_area {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					padding: var(--size-4);
+
+					.value {
+						font-size: var(--scale-fluid-5);
+						font-weight: bold;
+						font-family: var(--font-mono);
+					}
+				}
+
+				&.__negative {
+					border-color: var(--color-orange-300);
+				}
+
+				&.__positive {
+					border-color: var(--color-green-400);
+
+					.value {
+						color: var(--color-green-400);
+					}
+				}
+			}
+		}
+	}
 
 	.cat_chart {
 		margin-bottom: var(--size-8);
