@@ -9,19 +9,40 @@
 	import type { ChartType } from 'chart.js'
 
 	export let monthlyReport:{
-			yearId: number
-			yearName: string
-			monthId: number
-			monthName: string
-			catId: number|null
-			catName: string|null
-			catColor: string|null
-			totalAmount: number
-			totalShared: number
-			budgetAmount: number|null
+		yearId: number
+		yearName: string
+		monthId: number
+		monthName: string
+		catId: number|null
+		catName: string|null
+		catColor: string|null
+		totalAmount: number
+		totalShared: number
+		budgetAmount: number|null
 	}[]
 
-	let allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
+	export let incomes: {
+		date: Date|null
+		id: number
+		name: string
+		createdAt: Date|null
+		note: string|null
+		monthId: number
+		amount: number
+		planned: number
+		month: {
+			id: number
+			yearId: number
+			name: string
+			note: string|null
+		}
+	}[]
+
+	const allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
+	const totalBudget = monthlyReport.reduce((accum, item) => (accum += item.budgetAmount ?? 0), 0)
+	const totalSpent = monthlyReport.reduce((accum, item) => (accum += item.totalAmount), 0)
+	const plannedTotalIncomes = incomes.reduce((accum, item) => (accum += item.planned), 0)
+	const amountTotalIncomes = incomes.reduce((accum, item) => (accum += item.amount), 0)
 
 	Chart.register(DoughnutController, ArcElement, Legend, Tooltip)
 	Chart.defaults.color = '#fff'
@@ -73,11 +94,45 @@
 	})
 </script>
 
+<section class="container_sm">
+	<div class="sub_area">
+		<div class="sub_head">
+			<h2 class="h3">Income</h2>
+		</div>
+
+		<div class="cat_report flex_table">
+			<!-- TODO -->
+			<!-- top left -->
+			<!-- planned income -->
+
+			<!-- top right -->
+			<!-- budget (red if more than planned income)-->
+
+			<!-- bottom left -->
+			<!-- actual income -->
+
+			<!-- bottom right -->
+			<!-- spent (red if more than actual income)-->
+		</div>
+	</div>
+</section>
 
 <section class="container_sm">
 	<div class="sub_area">
+		<div class="sub_head">
+			<h2 class="h3">Where spent so far</h2>
+		</div>
+
 		<div class="cat_chart">
 			<canvas bind:this={catChartEl}></canvas>
+		</div>
+	</div>
+</section>
+
+<section class="container_sm">
+	<div class="sub_area">
+		<div class="sub_head">
+			<h2 class="h3">Categories</h2>
 		</div>
 
 		<div class="cat_report flex_table">
@@ -140,8 +195,9 @@
 <section class="container_sm">
 	<div class="sub_area">
 		<div class="title_area">
-			<h2>Shared Report:</h2>
+			<h2 class="h3">Shared Report</h2>
 		</div>
+
 		<div class="share_report flex_table">
 			<div class="ft_row __header">
 				<div class="ft_col __color"></div>

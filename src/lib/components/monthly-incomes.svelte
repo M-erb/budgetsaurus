@@ -45,20 +45,20 @@
 			shares: shareItem[]
 		}[]
 		incomes: {
-				date: Date|null
+			date: Date|null
+			id: number
+			name: string
+			createdAt: Date|null
+			note: string|null
+			monthId: number
+			amount: number
+			planned: number
+			month: {
 				id: number
+				yearId: number
 				name: string
-				createdAt: Date|null
 				note: string|null
-				monthId: number
-				amount: number
-				planned: number
-				month: {
-					id: number
-					yearId: number
-					name: string
-					note: string|null
-				}
+			}
 		}[]
 		year: {
 			id: number
