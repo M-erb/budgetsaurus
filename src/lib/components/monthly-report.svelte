@@ -38,11 +38,11 @@
 		}
 	}[]
 
-	const allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
-	const totalBudget = monthlyReport.reduce((accum, item) => (accum += item.budgetAmount ?? 0), 0)
-	const totalSpent = monthlyReport.reduce((accum, item) => (accum += item.totalAmount), 0)
-	const plannedTotalIncomes = incomes.reduce((accum, item) => (accum += item.planned), 0)
-	const amountTotalIncomes = incomes.reduce((accum, item) => (accum += item.amount), 0)
+	$:allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
+	$:totalBudget = monthlyReport.reduce((accum, item) => (accum += item.budgetAmount ?? 0), 0)
+	$:totalSpent = monthlyReport.reduce((accum, item) => (accum += item.totalAmount), 0)
+	$:plannedTotalIncomes = incomes.reduce((accum, item) => (accum += item.planned), 0)
+	$:amountTotalIncomes = incomes.reduce((accum, item) => (accum += item.amount), 0)
 
 	Chart.register(DoughnutController, ArcElement, Legend, Tooltip)
 	Chart.defaults.color = '#fff'
