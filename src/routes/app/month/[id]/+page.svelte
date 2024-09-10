@@ -30,13 +30,13 @@
 			</nav>
 		</div>
 	</section>
-	
+
 	<section class="month_title">
 		<div class="container">
 			<div class="title_area">
 				<h1 class=""><span class="fancy_text">{data.month.name}</span> <small>{data.month.year.name}</small></h1>
 			</div>
-	
+
 			<nav class="month_nav">
 				<button class="btn" on:click={() => tabNav('income')} class:__active={curTab === 'income'}>Income</button>
 				<button class="btn" on:click={() => tabNav('report')} class:__active={curTab === 'report'}>Report</button>
