@@ -48,12 +48,18 @@ You can preview the production build with `npm run preview`.
 
 ## TODOs
 
-* Add nav to month page
-	* income
-	* report
-	* transactions
-* add income feat
-* add shared feat
-	* share transaction amount with another table
-	* new query to show all shared amount totalled by category
-	* adjust other report queries to only show shared amount instead of total
+- [x] Add nav to month page
+	- [x] income
+	- [x] report
+	- [x] transactions
+- [x] add income feat
+- [x] add shared feat
+	- [x] share transaction amount with another table
+	- [x] new query to show all shared amount totalled by category
+	- [x] adjust other report queries to only show shared amount instead of total
+- [ ] Add+edit incomes
+- [ ] Add+edit transactions
+- [ ] Add+edit years and months
+- [ ] add+edit categories
+- [ ] When items are add or edited page loads need to be invalidated
+- [ ] User authorization+authentication
