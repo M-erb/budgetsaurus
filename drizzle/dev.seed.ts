@@ -90,7 +90,6 @@ async function seed() {
 	}
 
 	// Seed Incomes
-	// const incomeData:Array<typeof schema.incomes.$inferInsert> = []
 	const incomeNames = ['Pay Check', 'Contacts', 'Misc.']
 	for (const month of monthsData) {
 		for (const name of incomeNames) {
@@ -133,7 +132,19 @@ async function seed() {
 				date
 			}).returning().get()
 
+			// Seed shareTransactions
 			if (randoCat.name === 'Groceries') {
+				const randoShareGroup = faker.helpers.arrayElement(shareGroupsData)
+
+				await db.insert(schema.shareTransactions).values({
+					shareGroupId: randoShareGroup.id!,
+					tranId: newTransaction.id,
+					note: faker.lorem.sentence(),
+					amount: Math.round(newTransaction.amount/2) // half of transaction amount
+				})
+			}
+
+			if (randoCat.name === 'Utilities') {
 				const randoShareGroup = faker.helpers.arrayElement(shareGroupsData)
 
 				await db.insert(schema.shareTransactions).values({
