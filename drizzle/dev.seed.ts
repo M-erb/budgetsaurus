@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import * as schema from '../src/lib/server/schema'
 import { lastDayOfMonth } from 'date-fns'
+import argon2 from '@node-rs/argon2'
 
 const TURSO_URL = process.env.TURSO_URL!
 const TURSO_AUTH = process.env.TURSO_AUTH
@@ -14,15 +15,25 @@ export const db = drizzle(client, { schema })
 async function seed() {
 	// Seed users
 	const users:Array<typeof schema.users.$inferInsert> = []
-	const usersCount = 5
+	const usersLogins:Array<object> = []
+	const usersCount = 3
 	for (let i = 0; i < usersCount; i++) {
+		const name = i === 0 ? 'admin' : faker.person.fullName()
+		const email = i === 0 ? 'admin@test.com' : faker.internet.email()
+		const pass = i === 0 ? '1234' : faker.internet.password()
+
 		const newUser = await db.insert(schema.users).values({
-			name: faker.person.fullName(),
-			email: faker.internet.email(),
-			pass: faker.internet.password(),
+			name,
+			email,
+			pass: await argon2.hash(pass),
+			active: i === 0
 		}).returning().get()
+
+		usersLogins.push({ name, email, pass })
 		users.push(newUser)
 	}
+
+	console.log('usersLogins: ', usersLogins)
 
 	// Seed categories
 	const categories:Array<typeof schema.cats.$inferInsert> = []
