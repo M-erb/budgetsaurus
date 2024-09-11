@@ -5,8 +5,9 @@ import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core'
 export const users = sqliteTable('users', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
-	email: text('email').notNull(),
+	email: text('email').notNull().unique(),
 	pass: text('pass').notNull(),
+	active: integer('active', { mode: 'boolean' }).default(false),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).default(sql`(unixepoch())`)
 })
 
