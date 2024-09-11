@@ -3,10 +3,22 @@ import type { RequestHandler } from './$types'
 import { to } from '$lib/lilUtils'
 import { db } from '$lib/server/db'
 import { years, months } from '@/lib/server/schema'
+import { verifyUser } from '$lib/server/jwt'
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	const token = cookies.get('token')
+	if (!token) error(401, 'unauthorized')
+
+	try {
+		const user = await verifyUser(token)
+		if (!user) error(401, 'unauthorized')
+	} catch (err) {
+		console.error(err)
+		error(401, 'unauthorized')
+	}
+
 	const { res: data, err: jsonErr } = await to(request.json())
-	if (jsonErr) error(401, 'Bad request')
+	if (jsonErr) error(400, 'Bad request')
 	console.error('jsonErr: ', jsonErr)
 
 	const res = await saveYearMonthDb(data)
