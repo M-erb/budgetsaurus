@@ -1,4 +1,4 @@
-import * as schema from './schema'
+import * as schema from '$lib/server/schema'
 import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import { TURSO_URL, TURSO_AUTH } from '$env/static/private'
