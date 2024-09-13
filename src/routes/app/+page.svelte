@@ -9,7 +9,7 @@
 	let isEmpty = !Boolean(data.years.length)
 
 	// figure out what the appropriate next year is
-	let nextYearFromDb = Number(data.years.at(-1)?.name) + 1 ?? 0
+	let nextYearFromDb = isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1
 	let nextYearFromToday = today.getFullYear() + 1
 	let nextYear = nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
 
