@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getYear } from 'date-fns'
+	import { getYear, addMonths } from 'date-fns'
 	import { returnMonth, monthsLongList, to } from '$lib/lilUtils'
 	import axios from 'redaxios'
 
@@ -8,11 +8,12 @@
 		month: monthsLong
 	}
 
+	export let offsetMonth:number = 1
 	const today = new Date()
 
 	const fields:fields = {
 		year: getYear(today),
-		month: returnMonth(today, { returnType: 'long' })
+		month: returnMonth(addMonths(today, offsetMonth), { returnType: 'long' })
 	}
 
 	async function handleSubmit () {
