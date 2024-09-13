@@ -27,6 +27,7 @@
 		<span class="label">Year</span>
 		<input type="text" bind:value={fields.year}>
 	</label>
+
 	<label>
 		<span class="label">Month</span>
 		<select bind:value={fields.month}>
@@ -35,14 +36,14 @@
 			{/each}
 		</select>
 	</label>
-	<div class="btn_wrap __right">
+
+	<div class="btn_wrap __center">
 		<button class="btn" type="submit">Add</button>
 	</div>
 </form>
 
 <style lang="postcss">
 	.get_started_form {
-		margin-top: var(--size-3);
 		max-width: var(--size-96);
 	}
 </style>
