@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { centsToDollars, isNegative } from '$lib/lilUtils'
-	import { format as formatDate } from 'date-fns'
-	import GroupShare from '$lib/icons/group-share.svelte'
 	import Plus from '$lib/icons/plus.svelte'
 	import ThumbsDown from '$lib/icons/thumbs-down.svelte'
 	import ThumbsUp from '$lib/icons/thumbs-up.svelte'

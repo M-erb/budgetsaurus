@@ -13,9 +13,3 @@
 <div class="page">
 	<slot></slot>
 </div>
-
-<style>
-	.page {
-		margin-bottom: var(--size-24);
-	}
-</style>
