@@ -89,8 +89,12 @@ async function seed() {
 	// Seed months
 	const monthsData:Array<typeof schema.months.$inferInsert> = []
 	const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	const today = new Date()
 	for (const year of yearsData) {
-		for (const monthName of monthNames) {
+		const thisYear = Number(year.name)
+		const maxMonthIndex = today.getFullYear() === thisYear ? today.getMonth() : 11
+		for (let i = 0; i < (maxMonthIndex + 1); i++) {
+			const monthName = monthNames[i]
 			const newMonth = await db.insert(schema.months).values({
 				yearId: year.id!,
 				name: monthName,
