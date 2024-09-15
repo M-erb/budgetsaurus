@@ -18,8 +18,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	const { res: data, err: jsonErr } = await to(request.json())
-	if (jsonErr) error(400, 'Bad request')
-	console.error('jsonErr: ', jsonErr)
+	if (jsonErr) {
+		console.error('jsonErr: ', jsonErr)
+		error(400, 'Bad request')
+	}
 
 	const res = await saveYearMonthDb(data)
 
@@ -42,12 +44,11 @@ async function saveYearMonthDb ({ year:yearName, month:monthName }:{ year:number
 		where: ((years, {eq}) => eq(years.name, String(yearName)))
 	}))
 
-	console.error('errYearFromDb: ', errYearFromDb)
+	if (errYearFromDb) console.error('errYearFromDb: ', errYearFromDb)
 
 	if (!yearFromDb) {
 		const {res: resNewYear, err: errNewYear} = await to(db.insert(years).values({name: String(yearName), note: ''}).returning())
-		console.error('errNewYear: ', errNewYear)
-		console.log('resNewYear: ', resNewYear)
+		if (errNewYear) console.error('errNewYear: ', errNewYear)
 		result.year = resNewYear![0]
 	} else result.year = yearFromDb
 
@@ -56,13 +57,11 @@ async function saveYearMonthDb ({ year:yearName, month:monthName }:{ year:number
 		where: ((months, {eq, and}) => and(eq(months.name, monthName), eq(months.yearId, result.year!.id!)))
 	}))
 
-	console.error('errMonthFromDb: ', errMonthFromDb)
-	console.log('monthFromDb: ', monthFromDb)
+	if (errMonthFromDb) console.error('errMonthFromDb: ', errMonthFromDb)
 
 	if (!monthFromDb) {
 		const { res: resNewMonth, err: errNewMonth } = await to(db.insert(months).values({name: monthName, yearId: result.year!.id!}).returning())
-		console.error('errNewMonth: ', errNewMonth)
-		console.log('db resMonth: ', resNewMonth)
+		if (errNewMonth) console.error('errNewMonth: ', errNewMonth)
 		result.month = resNewMonth![0]
 		return result
 	} else {
