@@ -2,28 +2,50 @@
 	import type { PageServerData } from './$types'
 	import AddNewMonth from '@/lib/components/add-new-month.svelte'
 	import Plus from '$lib/icons/plus.svelte'
-	import Modal from '$lib/components/modal.svelte'
+	import { invalidateAll } from '$app/navigation'
+	import axios from 'redaxios'
+	import { to, monthsLongList } from '$lib/lilUtils'
 
 	export let data:PageServerData
 	const today = new Date()
 	let isEmpty = !Boolean(data.years.length)
 
 	// figure out what the appropriate next year is
-	let nextYearFromDb = isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1
 	let nextYearFromToday = today.getFullYear() + 1
-	let nextYear = nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
+	let nextYearFromDb: number
+	let nextYear: number
 
-	let actionType: 'addMonth'|'addYear'|''
-	let showModal: boolean
+	$: nextYearFromDb = isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1
+	$: nextYear = nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
 
-	function openAddMonth () {
-		actionType = 'addMonth'
-		showModal = true
+	async function addMonth (yearName: string, monthCount: number) {
+		if (monthCount >= 12) return
+
+		const fields = {
+			year: yearName,
+			month: monthsLongList[monthCount]
+		}
+
+		const {res, err} = await to(axios.post('/api/months', fields))
+		if (err) console.error('addMonth err: ', err)
+
+		reloadData()
 	}
 
-	function openAddYear () {
-		actionType = 'addYear'
-		showModal = true
+	async function addYear (year: number) {
+		const fields = {
+			year: String(year),
+			month: monthsLongList[0]
+		}
+
+		const {res, err} = await to(axios.post('/api/months', fields))
+		if (err) console.error('addYear err: ', err)
+
+		reloadData()
+	}
+
+	function reloadData () {
+		invalidateAll()
 	}
 </script>
 
@@ -31,7 +53,7 @@
 	<h1>Budgetsaurus</h1>
 	{#if isEmpty}
 		<p>Seems there is no data yet, lets get started!</p>
-		<AddNewMonth />
+		<AddNewMonth on:finished={reloadData} />
 	{:else}
 		<ul class="years_list">
 			{#each data.years as year}
@@ -45,28 +67,18 @@
 						{/each}
 						{#if year.months.length < 12}
 							<li class="add_btn">
-								<button class="btn" on:click|preventDefault={openAddMonth}><Plus /><span>Next Month</span></button>
+								<button class="btn" on:click|preventDefault={() => addMonth(year.name, year.months.length)}><Plus /><span>Next Month</span></button>
 							</li>
 						{/if}
 					</ul>
 				</li>
 			{/each}
 			<li class="item">
-				<button class="btn" on:click|preventDefault={openAddYear}><Plus /><span>Start {nextYear}</span></button>
+				<button class="btn" on:click|preventDefault={() => addYear(nextYear)}><Plus /><span>Start {nextYear}</span></button>
 			</li>
 		</ul>
 	{/if}
 </section>
-
-<Modal bind:showModal on:close={() => actionType = ''}>
-	{#if actionType === 'addMonth'}
-		<AddNewMonth />
-	{/if}
-
-	{#if actionType === 'addYear'}
-		<p>add a new year</p>
-	{/if}
-</Modal>
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
