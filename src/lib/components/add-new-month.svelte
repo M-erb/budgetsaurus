@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getYear, addMonths } from 'date-fns'
 	import { returnMonth, monthsLongList, to } from '$lib/lilUtils'
+	import { createEventDispatcher } from 'svelte'
 	import axios from 'redaxios'
 
 	interface fields {
@@ -8,18 +9,26 @@
 		month: monthsLong
 	}
 
-	export let offsetMonth:number = 1
+	const dispatch = createEventDispatcher()
 	const today = new Date()
+	export let year: number = getYear(today)
+	export let offsetMonth: number = 0
+	export let month: number|null = null
 
-	const fields:fields = {
-		year: getYear(today),
-		month: returnMonth(addMonths(today, offsetMonth), { returnType: 'long' })
+	const fields: fields = {
+		year,
+		month: month !== null ? monthsLongList[month] : returnMonth(addMonths(today, offsetMonth), { returnType: 'long' })
 	}
 
 	async function handleSubmit () {
 		const {res, err} = await to(axios.post('/api/months', fields))
-		if (err) console.error('err: ', err)
-		console.log('res.data: ', res!.data)
+		if (err) {
+			console.error('err: ', err)
+			dispatch('error', err)
+			return
+		}
+
+		dispatch('finished', res?.data)
 	}
 </script>
 
@@ -38,7 +47,7 @@
 		</select>
 	</label>
 
-	<div class="btn_wrap __center">
+	<div class="btn_wrap __right">
 		<button class="btn" type="submit">Add</button>
 	</div>
 </form>
