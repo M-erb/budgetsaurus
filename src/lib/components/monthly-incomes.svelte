@@ -254,11 +254,6 @@
 		flex-wrap: wrap;
 	}
 
-	form {
-		max-width: 100%;
-		width: 360px;
-	}
-
 	.tran_list {
 		.ft_row {
 			.__name {

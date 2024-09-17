@@ -34,7 +34,8 @@
 
 <style lang=postcss>
 	dialog {
-		max-width: var(--width-xs);
+		width: 100%;
+		max-width: 360px;
 		border-radius: var(--radius-xl);
 		background-color: var(--color-slate-700);
 		border: 4px solid var(--color-blue-200);
@@ -47,8 +48,9 @@
 			opacity: .9;
 		}
 
-		& > .modal_inner {
+		.modal_inner {
 			padding: var(--size-7) var(--size-4) var(--size-4);
+			width: 100%;
 		}
 
 		&[open] {
@@ -69,11 +71,6 @@
 			color: var(--color-slate-200);
 			cursor: pointer;
 			transition: color .3s ease-in-out;
-
-			svg {
-				width: 32px;
-				height: 32px;
-			}
 
 			&:hover {
 				color: var(--color-red-200);
