@@ -3,6 +3,11 @@
 	import Plus from '$lib/icons/plus.svelte'
 	import ThumbsDown from '$lib/icons/thumbs-down.svelte'
 	import ThumbsUp from '$lib/icons/thumbs-up.svelte'
+	import Modal from './modal.svelte'
+	import CentsToDollarsField from '$lib/components/cents-to-dollars-field.svelte'
+	import axios from 'redaxios'
+	import { invalidateAll } from '$app/navigation'
+	import { to } from '$lib/lilUtils'
 
 	interface shareItem {
 		id: number
@@ -15,6 +20,23 @@
 			id: number
 			name: string
 			createdAt: Date|null
+			note: string|null
+		}
+	}
+
+	interface income {
+		date: Date|null
+		id: number
+		name: string
+		createdAt: Date|null
+		note: string|null
+		monthId: number
+		amount: number
+		planned: number
+		month: {
+			id: number
+			yearId: number
+			name: string
 			note: string|null
 		}
 	}
@@ -42,22 +64,7 @@
 			}
 			shares: shareItem[]
 		}[]
-		incomes: {
-			date: Date|null
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-			monthId: number
-			amount: number
-			planned: number
-			month: {
-				id: number
-				yearId: number
-				name: string
-				note: string|null
-			}
-		}[]
+		incomes: income[]
 		year: {
 			id: number
 			name: string
@@ -65,9 +72,71 @@
 		}
 	}
 
-	function addShares (amount:number, shares:shareItem[]) {
-		const sharesAmount = shares.reduce((accum, cur) => (accum += cur.amount), 0)
-		return amount - sharesAmount
+	let showModal = false
+	let modalMode: 'addNew'|'edit'|null = null
+	const addNewFields = {
+		monthId: month.id,
+		name: '',
+		note: '',
+		planned: 0,
+		amount: 0
+	}
+
+	interface editFieldsType {
+		id: number
+		monthId: number
+		name: string
+		note: string|null
+		planned: number
+		amount: number
+	}
+
+	const editFields: editFieldsType = {
+		id: 0,
+		monthId: 0,
+		name: '',
+		note: '',
+		planned: 0,
+		amount: 0
+	}
+
+	function startAddNew () {
+		showModal = true
+		modalMode = 'addNew'
+	}
+
+	function startEditEntry (entry:income) {
+		editFields.id = entry.id
+		editFields.monthId = entry.monthId
+		editFields.name = entry.name
+		editFields.note = entry.note
+		editFields.planned = entry.planned
+		editFields.amount = entry.amount
+
+		modalMode = 'edit'
+		showModal = true
+	}
+
+	async function saveNew () {
+		const {res, err} = await to(axios.post('/api/incomes', addNewFields))
+		if (err) {
+			console.error('err: ', err)
+			return
+		}
+
+		showModal = false
+		await invalidateAll()
+	}
+
+	async function saveEdit () {
+		const {res, err} = await to(axios.put('/api/incomes', editFields))
+		if (err) {
+			console.error('err: ', err)
+			return
+		}
+
+		showModal = false
+		await invalidateAll()
 	}
 </script>
 
@@ -76,7 +145,7 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Income</h2>
 			<div class="btn_wrap">
-				<button class="btn_round"><Plus /></button>
+				<button class="btn_round" on:click={startAddNew}><Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
@@ -95,7 +164,7 @@
 			{#each month.incomes as item}
 				{@const difference = item.amount - item.planned}
 				{@const isDiffNeg = isNegative(difference)}
-				<div class="ft_row">
+				<button class="ft_row" on:click={() => startEditEntry(item)} title="Edit Income">
 					<div class="ft_col __name">
 						<span>{item.name}</span>
 					</div>
@@ -114,15 +183,65 @@
 							<ThumbsUp />
 						{/if}
 					</div>
-				</div>
+				</button>
 			{/each}
 		</div>
 
 		<div class="btn_wrap __left __t_space">
-			<button class="btn"><Plus /><span>Transaction</span></button>
+			<button class="btn" on:click={startAddNew}><Plus /><span>Transaction</span></button>
 		</div>
 	</div>
 </section>
+
+<Modal bind:showModal>
+	{#if modalMode === 'addNew'}
+		<form on:submit|preventDefault={saveNew}>
+			<label>
+				<span class="label">Name</span>
+				<input type="text" bind:value={addNewFields.name}>
+			</label>
+			<CentsToDollarsField
+				label=Planned
+				bind:value={addNewFields.planned}
+			/>
+			<CentsToDollarsField
+				label=Actual
+				bind:value={addNewFields.amount}
+			/>
+			<label>
+				<span class="label">Note</span>
+				<textarea bind:value={addNewFields.note}></textarea>
+			</label>
+			<div class="btn_wrap __right">
+				<button class="btn">Submit</button>
+			</div>
+		</form>
+	{/if}
+
+	{#if modalMode === 'edit'}
+		<form on:submit|preventDefault={saveEdit}>
+			<label>
+				<span class="label">Name</span>
+				<input type="text" bind:value={editFields.name}>
+			</label>
+			<CentsToDollarsField
+				label=Planned
+				bind:value={editFields.planned}
+			/>
+			<CentsToDollarsField
+				label=Actual
+				bind:value={editFields.amount}
+			/>
+			<label>
+				<span class="label">Note</span>
+				<textarea bind:value={editFields.note}></textarea>
+			</label>
+			<div class="btn_wrap __right">
+				<button class="btn">Submit</button>
+			</div>
+		</form>
+	{/if}
+</Modal>
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
@@ -133,6 +252,11 @@
 		align-items: center;
 		gap: var(--size-4);
 		flex-wrap: wrap;
+	}
+
+	form {
+		max-width: 100%;
+		width: 360px;
 	}
 
 	.tran_list {
