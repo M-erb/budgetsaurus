@@ -17,11 +17,17 @@ label {
 		min-width: 200px;
 		font-family: var(--font-body);
 		font-size: var(--scale-00);
+		color: var(--color-white);
 		line-height: 1.4;
+		background-color: var(--color-slate-500);
 		border: 1px solid var(--color-grey-300);
 		border-radius: var(--radius-md);
 		padding: var(--size-2) var(--size-2);
 		transition: color .3s ease-in-out, border-color .3s ease-in-out;
+
+		&:focus-visible {
+			outline: 3px solid var(--color-blue);
+		}
 	}
 
 	& textarea {
