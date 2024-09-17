@@ -105,7 +105,7 @@ async function seed() {
 	}
 
 	// Seed Incomes
-	const incomeNames = ['Pay Check', 'Contacts', 'Misc.']
+	const incomeNames = ['Pay Check', 'Contracts', 'Misc.']
 	for (const month of monthsData) {
 		for (const name of incomeNames) {
 			if (name === 'Misc.' && faker.number.int({ min: 0, max: 1 })) continue
