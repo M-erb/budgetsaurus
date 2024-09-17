@@ -7,10 +7,13 @@
 
 	let dialog:HTMLDialogElement
 
-	$: if (dialog && showModal) dialog.showModal()
+	$: {
+		if (dialog && dialog.showModal && showModal) dialog.showModal()
+		if (dialog && dialog.close && !showModal) dialog.close()
+	}
 
-	function close () {
-		dialog.close()
+	function closeModal () {
+		showModal = false
 		dispatch('close')
 	}
 </script>
@@ -18,13 +21,13 @@
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
 	bind:this={dialog}
-	on:close={() => (showModal = false)}
-	on:click|self={close}
+	on:close={closeModal}
+	on:click|self={closeModal}
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="modal_inner" on:click|stopPropagation>
 		<!-- svelte-ignore a11y-autofocus -->
-		<button class=close_btn autofocus on:click|preventDefault={close}><CloseX /></button>
+		<button class=close_btn autofocus on:click|preventDefault={closeModal}><CloseX /></button>
 		<slot />
 	</div>
 </dialog>
