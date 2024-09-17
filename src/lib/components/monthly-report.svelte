@@ -172,7 +172,7 @@
 			</div>
 
 			{#each monthlyReport as cat }
-				{@const totalAmount = cat.totalAmount - cat.totalShared ?? 0}
+				{@const totalAmount = cat.totalAmount - cat.totalShared}
 				{@const difference = (cat.budgetAmount ?? 0) - totalAmount}
 				{@const isDiffNeg = isNegative(difference)}
 				<div class="ft_row cat_item">
