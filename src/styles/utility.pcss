@@ -19,19 +19,41 @@
 		padding: var(--size-4) 0;
 		position: relative;
 
+		width: 100%;
+		color: inherit;
+		background-color: transparent;
+		border: none;
+		text-align: left;
+
 		@media (--md) {
 			gap: var(--size-4);
 			flex-wrap: nowrap;
 			padding: var(--size-2) 0;
 		}
 
-		&:nth-child(odd)::after {
+		&::after {
 			content: '';
 			position: absolute;
-			background-color: var(--color-grey-900);
+			background-color: transparent;
 			top:0;right:-10px;bottom:0;left:-10px;
 			z-index: 1;
 			border-radius: var(--radius-md);
+		}
+
+		&:nth-child(odd)::after {
+			background-color: var(--color-grey-900);
+		}
+
+		&button {
+			cursor: pointer;
+
+			&:hover {
+				z-index: 2;
+
+				&::after {
+					outline: 2px solid var(--color-blue-200);
+				}
+			}
 		}
 
 		.ft_col {
