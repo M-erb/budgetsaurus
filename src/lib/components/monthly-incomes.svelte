@@ -41,7 +41,7 @@
 		}
 	}
 
-	export let month:{
+	export let month: {
 		id: number
 		note: string|null
 		name: string
@@ -101,6 +101,11 @@
 	}
 
 	function startAddNew () {
+		editFields.name = ''
+		editFields.planned = 0
+		editFields.amount = 0
+		editFields.note = ''
+
 		showModal = true
 		modalMode = 'addNew'
 	}
@@ -118,7 +123,7 @@
 	}
 
 	async function saveNew () {
-		const {res, err} = await to(axios.post('/api/incomes', addNewFields))
+		const {err} = await to(axios.post('/api/incomes', addNewFields))
 		if (err) {
 			console.error('err: ', err)
 			return
@@ -129,7 +134,7 @@
 	}
 
 	async function saveEdit () {
-		const {res, err} = await to(axios.put('/api/incomes', editFields))
+		const {err} = await to(axios.put('/api/incomes', editFields))
 		if (err) {
 			console.error('err: ', err)
 			return
