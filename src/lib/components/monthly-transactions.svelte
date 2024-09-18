@@ -3,6 +3,12 @@
 	import { format as formatDate } from 'date-fns'
 	import GroupShare from '$lib/icons/group-share.svelte'
 	import Plus from '$lib/icons/plus.svelte'
+	import Modal from './modal.svelte'
+	import CentsToDollarsField from '$lib/components/cents-to-dollars-field.svelte'
+	import axios from 'redaxios'
+	import { invalidateAll } from '$app/navigation'
+	import { to } from '$lib/lilUtils'
+	import SelectCatField from '@/lib/components/select-cat-field.svelte'
 
 	interface shareItem {
 		id: number
@@ -67,6 +73,120 @@
 		createdAt: Date|null
 		note: string|null
 	}[]
+
+	let showModal = false
+	let modalMode: 'addNew'|'edit'|null = null
+
+	interface newFieldsType {
+		monthId: number
+		catId: number
+		name: string
+		note: string|null
+		amount: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			amount: number
+			note: string|null
+			createdAt: Date|null
+		}
+	}
+
+	const addNewFields: newFieldsType = {
+		monthId: month.id,
+		catId: 0,
+		name: '',
+		amount: 0,
+		note: ''
+	}
+
+	interface editFieldsType {
+		id: number
+		monthId: number
+		catId: number
+		name: string
+		note: string|null
+		amount: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			id: number
+			amount: number
+			note: string|null
+			createdAt: Date|null
+		}
+	}
+
+	const editFields: editFieldsType = {
+		id: 0,
+		monthId: 0,
+		catId: 0,
+		name: '',
+		note: '',
+		amount: 0
+	}
+
+	let selectedCat: cat
+
+	function startAddNew () {
+		delete editFields.share
+		editFields.catId = 0
+		editFields.name = ''
+		editFields.amount = 0
+		editFields.note = ''
+
+		showModal = true
+		modalMode = 'addNew'
+	}
+
+	function startEditEntry (entry:transaction) {
+		delete editFields.share
+
+		editFields.id = entry.id
+		editFields.monthId = entry.monthId
+		editFields.name = entry.name
+		editFields.note = entry.note
+		editFields.amount = entry.amount
+
+		if (entry.shares.length) {
+			const share = entry.shares[0]
+			editFields.share = {
+				id: share.id,
+				tranId: share.tranId,
+				shareGroupId: share.shareGroupId,
+				amount: share.amount,
+				note: share.note,
+				createdAt: share.createdAt
+			}
+		}
+
+		modalMode = 'edit'
+		showModal = true
+	}
+
+	async function saveNew () {
+		const {err} = await to(axios.post('/api/transactions', addNewFields))
+		if (err) {
+			console.error('err: ', err)
+			return
+		}
+
+		showModal = false
+		await invalidateAll()
+	}
+
+	async function saveEdit () {
+		const {err} = await to(axios.put('/api/transactions', editFields))
+		if (err) {
+			console.error('err: ', err)
+			return
+		}
+
+		showModal = false
+		await invalidateAll()
+	}
+
+	function combineShares (amount:number, shares:shareItem[]) {
 		const sharesAmount = shares.reduce((accum, cur) => (accum += cur.amount), 0)
 		return amount - sharesAmount
 	}
@@ -77,7 +197,7 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Transactions</h2>
 			<div class="btn_wrap">
-				<button class="btn_round"><Plus /></button>
+				<button class="btn_round" on:click={startAddNew}><Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
@@ -95,9 +215,9 @@
 			</div>
 
 			{#each month.transactions as item}
-				{@const amount = addShares(item.amount, item.shares)}
+				{@const amount = combineShares(item.amount, item.shares)}
 				{@const hasShares = Boolean(item.shares.length)}
-				<div class="ft_row">
+				<button class="ft_row" on:click={() => startEditEntry(item)} title="Edit Income">
 					<div class="ft_col tran_color">
 						<div class="color_box" style:background-color={item.cat.color}></div>
 					</div>
@@ -118,15 +238,58 @@
 							<GroupShare />
 						{/if}
 					</div>
-				</div>
+				</button>
 			{/each}
 		</div>
 
 		<div class="btn_wrap __left __t_space">
-			<button class="btn"><Plus /><span>Transaction</span></button>
+			<button class="btn" on:click={startAddNew}><Plus /><span>Transaction</span></button>
 		</div>
 	</div>
 </section>
+
+<Modal bind:showModal>
+	{#if modalMode === 'addNew'}
+		<form on:submit|preventDefault={saveNew}>
+			<label>
+				<span class="label">Name</span>
+				<input type="text" bind:value={addNewFields.name}>
+			</label>
+			<CentsToDollarsField
+				label=Actual
+				bind:value={addNewFields.amount}
+			/>
+			<SelectCatField bind:value={addNewFields.catId} cats={cats} />
+			<label>
+				<span class="label">Note</span>
+				<textarea bind:value={addNewFields.note}></textarea>
+			</label>
+			<div class="btn_wrap __right">
+				<button class="btn" type="submit">Submit</button>
+			</div>
+		</form>
+	{/if}
+
+	{#if modalMode === 'edit'}
+		<form on:submit|preventDefault={saveEdit}>
+			<label>
+				<span class="label">Name</span>
+				<input type="text" bind:value={editFields.name}>
+			</label>
+			<CentsToDollarsField
+				label=Actual
+				bind:value={editFields.amount}
+			/>
+			<label>
+				<span class="label">Note</span>
+				<textarea bind:value={editFields.note}></textarea>
+			</label>
+			<div class="btn_wrap __right">
+				<button class="btn" type="submit">Submit</button>
+			</div>
+		</form>
+	{/if}
+</Modal>
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
