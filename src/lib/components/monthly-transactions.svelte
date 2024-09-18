@@ -19,29 +19,39 @@
 		}
 	}
 
+	interface transaction {
+		id: number
+		note: string|null
+		date: Date|null
+		name: string
+		createdAt: Date|null
+		catId: number
+		monthId: number
+		amount: number
+		cat: {
+			id: number
+			name: string
+			createdAt: Date|null
+			note: string|null
+			color: string
+		}
+		shares: shareItem[]
+	}
+
+	interface cat {
+		id: number
+		note: string|null
+		createdAt: Date|null
+		color: string
+		name: string
+	}
+
 	export let month:{
 		id: number
 		note: string|null
 		name: string
 		yearId: number
-		transactions: {
-			id: number
-			note: string|null
-			date: Date|null
-			name: string
-			createdAt: Date|null
-			catId: number
-			monthId: number
-			amount: number
-			cat: {
-				id: number
-				name: string
-				createdAt: Date|null
-				note: string|null
-				color: string
-			}
-			shares: shareItem[]
-		}[]
+		transactions: transaction[]
 		year: {
 			id: number
 			name: string
@@ -49,7 +59,14 @@
 		}
 	}
 
-	function addShares (amount:number, shares:shareItem[]) {
+	export let cats: cat[]
+
+	export let shareGroups: {
+		id: number
+		name: string
+		createdAt: Date|null
+		note: string|null
+	}[]
 		const sharesAmount = shares.reduce((accum, cur) => (accum += cur.amount), 0)
 		return amount - sharesAmount
 	}

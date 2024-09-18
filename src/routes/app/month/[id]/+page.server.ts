@@ -48,8 +48,13 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
 	const monthlyReport = await getMonthBudgetReport(month.yearId, month.id)
 
+	const cats = await db.query.cats.findMany()
+	const shareGroups = await db.query.shareGroups.findMany()
+
 	return {
 		month,
-		monthlyReport
+		monthlyReport,
+		cats,
+		shareGroups
 	}
 }

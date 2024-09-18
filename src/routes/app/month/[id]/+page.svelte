@@ -54,7 +54,7 @@
 	{/if}
 
 	{#if curTab === 'tran' }
-		<MonthlyTransactions month={data.month} />
+		<MonthlyTransactions month={data.month} cats={data.cats} shareGroups={data.shareGroups} />
 	{/if}
 </main>
 
