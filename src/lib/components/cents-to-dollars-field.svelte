@@ -39,6 +39,11 @@
 <style lang="postcss">
 	/* @import '@styles/mediaQueries.pcss'; */
 
+	label {
+		position: relative;
+		z-index: 1;
+	}
+
 	.num_field {
 		display: flex;
 		justify-content: space-between;
@@ -46,6 +51,7 @@
 		gap: var(--size-2);
 
 		position: relative;
+		z-index: 1;
 		font-family: var(--font-mono);
 		background-color: var(--color-slate-500);
 		border: 1px solid var(--color-grey-300);
