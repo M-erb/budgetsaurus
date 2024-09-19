@@ -8,7 +8,8 @@
 	import axios from 'redaxios'
 	import { invalidateAll } from '$app/navigation'
 	import { to } from '$lib/lilUtils'
-	import SelectCatField from '@/lib/components/select-cat-field.svelte'
+	import SelectCatField from '$lib/components/select-cat-field.svelte'
+	import AddShare from '$lib/components/add-share.svelte'
 
 	interface shareItem {
 		id: number
@@ -88,7 +89,6 @@
 			shareGroupId: number
 			amount: number
 			note: string|null
-			createdAt: Date|null
 		}
 	}
 
@@ -126,14 +126,13 @@
 		amount: 0
 	}
 
-	let selectedCat: cat
-
 	function startAddNew () {
-		delete editFields.share
-		editFields.catId = 0
-		editFields.name = ''
-		editFields.amount = 0
-		editFields.note = ''
+		delete addNewFields.share
+		addNewFields.monthId = month.id
+		addNewFields.catId = 0
+		addNewFields.name = ''
+		addNewFields.amount = 0
+		addNewFields.note = ''
 
 		showModal = true
 		modalMode = 'addNew'
@@ -141,9 +140,9 @@
 
 	function startEditEntry (entry:transaction) {
 		delete editFields.share
-
 		editFields.id = entry.id
 		editFields.monthId = entry.monthId
+		editFields.catId = entry.catId
 		editFields.name = entry.name
 		editFields.note = entry.note
 		editFields.amount = entry.amount
@@ -248,7 +247,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal>
+<Modal bind:showModal on:close={() => modalMode = null}>
 	{#if modalMode === 'addNew'}
 		<form on:submit|preventDefault={saveNew}>
 			<label>
@@ -256,10 +255,11 @@
 				<input type="text" bind:value={addNewFields.name}>
 			</label>
 			<CentsToDollarsField
-				label=Actual
+				label=Amount
 				bind:value={addNewFields.amount}
 			/>
 			<SelectCatField bind:value={addNewFields.catId} cats={cats} />
+			<AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={addNewFields.note}></textarea>
@@ -280,6 +280,8 @@
 				label=Actual
 				bind:value={editFields.amount}
 			/>
+			<SelectCatField bind:value={editFields.catId} cats={cats} />
+			<AddShare bind:value={editFields.share} amount={editFields.amount} tranId={editFields.id} shareGroups={shareGroups} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={editFields.note}></textarea>
