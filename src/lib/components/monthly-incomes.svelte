@@ -198,7 +198,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal>
+<Modal bind:showModal on:close={() => modalMode = null}>
 	{#if modalMode === 'addNew'}
 		<form on:submit|preventDefault={saveNew}>
 			<label>
