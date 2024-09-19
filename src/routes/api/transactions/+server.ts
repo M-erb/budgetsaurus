@@ -40,6 +40,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	if (!shareData) return json(newEntry)
 
+	shareData.tranId = newEntry.id
 	const newShare = await db
 		.insert(shareTransactions)
 		.values(shareData)
@@ -82,7 +83,7 @@ interface entryType {
 		note: string | null
 		amount: number
 		shareGroupId: number
-		tranId: number
+		tranId: number | undefined
 		id: number
 	}
 }
