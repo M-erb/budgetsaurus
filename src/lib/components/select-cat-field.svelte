@@ -9,14 +9,15 @@
 		name: string
 	}
 
-	export let value
+	export let value: number
 	export let cats: cat[]
 
 	let active = false
 	let selected: cat|undefined
 
+	$: selected = value ? cats.find(item => item.id === value) : undefined
+
 	function select (cat: cat) {
-		selected = cat
 		value = cat.id
 		active = false
 	}
@@ -53,6 +54,7 @@
 	.select_field_area {
 		margin-bottom: var(--size-4);
 		position: relative;
+		z-index: 2;
 
 		.color {
 			width: 24px;
