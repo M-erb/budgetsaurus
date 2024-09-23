@@ -27,7 +27,6 @@
 
 	// ensure that share amount is never above the transaction amount
 	$: if (value && value.amount > amount) value.amount = amount
-	// $: if (value) active = true
 
 	onMount(() => {
 		if (value) active = true
@@ -41,11 +40,13 @@
 			return
 		}
 
-		value = {
-			shareGroupId: 0,
-			tranId,
-			amount: 0,
-			note: ''
+		if (value === undefined) {
+			value = {
+				shareGroupId: 0,
+				tranId,
+				amount: 0,
+				note: ''
+			}
 		}
 
 		active = true
