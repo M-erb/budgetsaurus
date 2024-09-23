@@ -12,6 +12,7 @@ export const getMonthsCatsTotals = async (yearId:number, monthId:number) => {
 			categoryId: cats.id,
 			categoryName: cats.name,
 			catColor: cats.color,
+			catNote: cats.note,
 			totalAmount: sql<number>`CAST(SUM(${transactions.amount}) AS DECIMAL(10, 2))`,
 		})
 		.from(months)
@@ -40,6 +41,7 @@ export const getMonthBudgetReport = async (yearId:number, monthId:number) => {
 			catId: cats.id,
 			catName: cats.name,
 			catColor: cats.color,
+			catNote: cats.note,
 			totalAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`,
 			totalShared: sql<number>`COALESCE(SUM(${shareTransactions.amount}), 0)`,
 			budgetAmount: budgets.amount,
