@@ -50,7 +50,7 @@
 	{/if}
 
 	{#if curTab === 'report' }
-		<MonthlyReportArea monthlyReport={data.monthlyReport} incomes={data.month.incomes} />
+		<MonthlyReportArea monthlyReport={data.monthlyReport} incomes={data.month.incomes} cats={data.cats} />
 	{/if}
 
 	{#if curTab === 'tran' }
