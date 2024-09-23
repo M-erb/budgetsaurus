@@ -101,10 +101,10 @@
 	}
 
 	function startAddNew () {
-		editFields.name = ''
-		editFields.planned = 0
-		editFields.amount = 0
-		editFields.note = ''
+		addNewFields.name = ''
+		addNewFields.planned = 0
+		addNewFields.amount = 0
+		addNewFields.note = ''
 
 		showModal = true
 		modalMode = 'addNew'
