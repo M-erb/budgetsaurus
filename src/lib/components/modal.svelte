@@ -1,6 +1,7 @@
 <script lang=ts>
 	import { createEventDispatcher } from 'svelte'
 	import CloseX from '$lib/icons/close-x.svelte'
+	import { browser } from '$app/environment'
 
 	const dispatch = createEventDispatcher()
 	export let showModal:boolean
@@ -8,13 +9,29 @@
 	let dialog:HTMLDialogElement
 
 	$: {
-		if (dialog && dialog.showModal && showModal) dialog.showModal()
-		if (dialog && dialog.close && !showModal) dialog.close()
+		if (dialog && dialog.showModal && showModal) {
+			if (browser) bodyStyles()
+			dialog.showModal()
+		}
+		if (dialog && dialog.close && !showModal) {
+			if (browser) undoBodyStyles()
+			dialog.close()
+		}
 	}
 
 	function closeModal () {
 		showModal = false
 		dispatch('close')
+	}
+
+	function bodyStyles () {
+		const body = document.querySelector('body')
+		body?.classList.add('modal-open')
+	}
+
+	function undoBodyStyles () {
+		const body = document.querySelector('body')
+		body?.classList.remove('modal-open')
 	}
 </script>
 
@@ -41,7 +58,7 @@
 		border: 4px solid var(--color-blue-200);
 		color: var(--color-white);
 		padding: 0;
-		position: relative;
+		position: fixed;
 
 		&::backdrop {
 			background-color: var(--color-slate-900);

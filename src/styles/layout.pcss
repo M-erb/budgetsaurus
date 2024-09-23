@@ -16,6 +16,11 @@ body {
 	scroll-behavior: smooth;
 	overflow-x: hidden;
 	transition: background-color .3s ease-in-out, color .3s ease-in-out;
+
+	&.modal-open {
+		overflow: hidden;
+		position: absolute;
+	}
 }
 
 main {
