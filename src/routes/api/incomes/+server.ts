@@ -29,12 +29,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	if (verifyErr !== null) error(400, { message: 'missing fields', errors: verifyErr })
 	if (cleanData === null) error(500, 'Something went wrong')
 
-	const newIncome = await db
+	const newEntry = await db
 		.insert(incomes)
 		.values(cleanData)
 		.returning().get()
 
-	return json(newIncome)
+	return json(newEntry)
 }
 
 async function verifyPost (data:unknown) {
@@ -72,13 +72,13 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 	if (verifyErr !== null) error(400, { message: 'missing fields', errors: verifyErr })
 	if (cleanData === null) error(500, 'Something went wrong')
 
-	const newIncome = await db
+	const editEntry = await db
 		.update(incomes)
 		.set(cleanData)
 		.where(eq(incomes.id, cleanData.id))
 		.returning().get()
 
-	return json(newIncome)
+	return json(editEntry)
 }
 
 async function verifyPut (data:unknown) {
