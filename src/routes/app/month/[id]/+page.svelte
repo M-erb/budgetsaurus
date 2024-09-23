@@ -72,6 +72,7 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--size-4);
+		flex-wrap: wrap;
 
 		.btn {
 			flex: 0 0 auto;
