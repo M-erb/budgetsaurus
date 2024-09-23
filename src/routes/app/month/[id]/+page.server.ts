@@ -48,7 +48,14 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
 	const monthlyReport = await getMonthBudgetReport(month.yearId, month.id)
 
-	const cats = await db.query.cats.findMany()
+	const cats = await db.query.cats.findMany({
+		with: {
+			budgets: {
+				where: ((cats, { eq }) => eq(cats.monthId, month.id))
+			}
+		}
+	})
+
 	const shareGroups = await db.query.shareGroups.findMany()
 
 	return {
