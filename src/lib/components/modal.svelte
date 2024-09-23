@@ -51,12 +51,16 @@
 
 <style lang=postcss>
 	dialog {
-		width: 100%;
-		max-width: 360px;
-		border-radius: var(--radius-xl);
-		background-color: var(--color-slate-700);
-		border: 4px solid var(--color-blue-200);
-		color: var(--color-white);
+		background-color: transparent;
+		border: none;
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
 		padding: 0;
 		position: fixed;
 
@@ -66,8 +70,15 @@
 		}
 
 		.modal_inner {
+			position: relative;
 			padding: var(--size-7) var(--size-4) var(--size-4);
+
 			width: 100%;
+			max-width: 360px;
+			border-radius: var(--radius-xl);
+			background-color: var(--color-slate-700);
+			border: 4px solid var(--color-blue-200);
+			color: var(--color-white);
 		}
 
 		&[open] {
