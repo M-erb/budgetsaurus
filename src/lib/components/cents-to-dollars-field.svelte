@@ -59,6 +59,7 @@
 		padding: var(--size-2) var(--size-2) var(--size-2) 0;
 		transition: color .3s ease-in-out, border-color .3s ease-in-out;
 		line-height: 1.4;
+		cursor: pointer;
 
 		.fake_input {
 			flex: 1 1 auto;
@@ -81,7 +82,10 @@
 			border: none;
 			color: transparent;
 			min-width: auto;
-			max-width: 100px;
+			max-width: 0;
+			width: 0;
+			padding: 0;
+			margin: 0;
 
 			&:focus {
 				outline: none;
