@@ -3,5 +3,8 @@ import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import { env } from '$env/dynamic/private'
 
-const client = createClient({ url: env.TURSO_URL, authToken: env.TURSO_AUTH })
+const url = env.TURSO_URL || process.env.TURSO_URL || ''
+const authToken = env.TURSO_AUTH || process.env.TURSO_AUTH || ''
+
+const client = createClient({ url, authToken })
 export const db = drizzle(client, { schema })
