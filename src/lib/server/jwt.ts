@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken'
 import type { JwtPayload } from 'jsonwebtoken'
-import { JWT_SECRET } from '$env/static/private'
+import { env } from '$env/dynamic/private'
 import { db } from '$lib/server/db'
 import * as schema from '$lib/server/schema'
-// import to from 'await-to-js'
 
 interface payload {
 	id: number
@@ -11,7 +10,7 @@ interface payload {
 
 export const jwtSign = async (payload: payload): Promise<string> => {
 	try {
-		const token = jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1d' })
+		const token = jwt.sign(payload, env.JWT_SECRET, { algorithm: 'HS256', expiresIn: '1d' })
 		return token
 	} catch (e) {
 		if (typeof e === 'string') {
@@ -26,7 +25,7 @@ export const jwtSign = async (payload: payload): Promise<string> => {
 
 export const jwtVerify = async (token: string): Promise<JwtPayload> => {
 	try {
-		const payload = jwt.verify(token, JWT_SECRET)
+		const payload = jwt.verify(token, env.JWT_SECRET)
 		if (typeof payload === 'string') throw 'something went wrong'
 		return payload
 	} catch (e) {
