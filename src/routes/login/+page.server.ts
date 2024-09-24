@@ -2,7 +2,7 @@ import type { Actions } from './$types'
 import { fail, redirect } from '@sveltejs/kit'
 import { db } from '$lib/server/db'
 import { jwtSign } from '$lib/server/jwt'
-import argon2 from '@node-rs/argon2'
+import argon2 from 'argon2-browser'
 
 export const actions = {
 	login: async ({request, cookies}) => {
@@ -28,7 +28,7 @@ export const actions = {
 			where: ((users, { eq }) => eq(users.email, String(email)))
 		})
 
-		const isGood = user ? await argon2.verify(user.pass, String(pass)) : false
+		const isGood = user ? await argon2.verify({ encoded: user.pass, pass: String(pass) }) : false
 
 		if (!user || !isGood) return fail(400, {
 			success: false,

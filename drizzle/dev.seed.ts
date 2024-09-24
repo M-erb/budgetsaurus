@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import * as schema from '../src/lib/server/schema'
 import { lastDayOfMonth } from 'date-fns'
-import argon2 from '@node-rs/argon2'
+import argon2 from 'argon2-browser'
 
 const TURSO_URL = process.env.TURSO_URL!
 const TURSO_AUTH = process.env.TURSO_AUTH
@@ -25,7 +25,7 @@ async function seed() {
 		const newUser = await db.insert(schema.users).values({
 			name,
 			email,
-			pass: await argon2.hash(pass),
+			pass: (await argon2.hash({ pass, salt: 'wow-a-salt' })).encoded,
 			active: i === 0
 		}).returning().get()
 
