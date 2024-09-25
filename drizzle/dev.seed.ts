@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import * as schema from '../src/lib/server/schema'
 import { lastDayOfMonth } from 'date-fns'
-import bcrypt from 'bcryptjs'
+import { hash } from 'bcrypt-ts'
 
 const TURSO_URL = process.env.TURSO_URL!
 const TURSO_AUTH = process.env.TURSO_AUTH
@@ -25,7 +25,7 @@ async function seed() {
 		const newUser = await db.insert(schema.users).values({
 			name,
 			email,
-			pass: bcrypt.hashSync(pass, 12),
+			pass: await hash(pass, 12),
 			active: i === 0
 		}).returning().get()
 

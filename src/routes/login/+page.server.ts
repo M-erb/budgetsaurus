@@ -2,7 +2,7 @@ import type { Actions } from './$types'
 import { fail, redirect } from '@sveltejs/kit'
 import { db } from '$lib/server/db'
 import { jwtSign } from '$lib/server/jwt'
-import bcrypt from 'bcryptjs'
+import { compare } from 'bcrypt-ts'
 
 export const actions = {
 	login: async ({request, cookies}) => {
@@ -28,7 +28,7 @@ export const actions = {
 			where: ((users, { eq }) => eq(users.email, String(email)))
 		})
 
-		const isGood = user ? bcrypt.compareSync(String(pass), user.pass) : false
+		const isGood = user ? await compare(String(pass), user.pass) : false
 
 		if (!user || !isGood) return fail(400, {
 			success: false,
