@@ -1,51 +1,33 @@
-import jwt from 'jsonwebtoken'
-import type { JwtPayload } from 'jsonwebtoken'
+import jwt from '@tsndr/cloudflare-worker-jwt'
+import type { JwtPayload, JwtHeader, JwtData } from '@tsndr/cloudflare-worker-jwt'
 import { env } from '$env/dynamic/private'
 import { db } from '$lib/server/db'
 import * as schema from '$lib/server/schema'
 
-interface payload {
+interface payloadType extends JwtPayload {
 	id: number
 }
 
 const JWT_SECRET = env.JWT_SECRET || process.env.JWT_SECRET || ''
 
-export const jwtSign = async (payload: payload): Promise<string> => {
-	try {
-		const token = jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1d' })
-		return token
-	} catch (e) {
-		if (typeof e === 'string') {
-			return e.toUpperCase()
-		} else if (e instanceof Error) {
-			return e.message
-		}
+export const jwtSign = async (payload: payloadType): Promise<string> => {
+	const token = await jwt.sign({
+		id: payload.id,
+		exp: Math.floor(Date.now() / 1000) + 86400 // 24 hours
+	}, JWT_SECRET)
 
-		return String(e)
-	}
-}
-
-export const jwtVerify = async (token: string): Promise<JwtPayload> => {
-	try {
-		const payload = jwt.verify(token, JWT_SECRET)
-		if (typeof payload === 'string') throw 'something went wrong'
-		return payload
-	} catch (e) {
-		if (typeof e === 'string') {
-			throw e.toUpperCase()
-		} else if (e instanceof Error) {
-			throw e.message
-		} else throw e
-	}
+	return token
 }
 
 export const verifyUser = async (token: string): Promise<typeof schema.users.$inferInsert | undefined> => {
-	const jwtPayload = await jwtVerify(token)
-	// if (jwtErr instanceof Error) throw jwtErr.message
-	if (!jwtPayload || !jwtPayload.id) throw Error('something went wrong')
+	const isValid = await jwt.verify(token, JWT_SECRET)
+	if (!isValid) throw Error('something went wrong')
+
+	const { payload }: JwtData<JwtPayload, JwtHeader> = await jwt.decode(token)
+	if (!payload || !payload.id) throw Error('something went wrong')
 
 	const user = db.query.users.findFirst({
-		where: (users, { eq }) => eq(users.id, jwtPayload.id)
+		where: (users, { eq }) => eq(users.id, payload.id)
 	})
 
 	if (user === undefined) throw Error('no user found')
