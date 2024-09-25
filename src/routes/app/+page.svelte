@@ -49,36 +49,38 @@
 	}
 </script>
 
-<section class="container">
-	<h1>Budgetsaurus</h1>
-	{#if isEmpty}
-		<p>Seems there is no data yet, lets get started!</p>
-		<AddNewMonth on:finished={reloadData} />
-	{:else}
-		<ul class="years_list">
-			{#each data.years as year}
+<main>
+	<section class="container">
+		<h1>Budgetsaurus</h1>
+		{#if isEmpty}
+			<p>Seems there is no data yet, lets get started!</p>
+			<AddNewMonth on:finished={reloadData} />
+		{:else}
+			<ul class="years_list">
+				{#each data.years as year}
+					<li class="item">
+						<h2 class="h5 year_label"><span class="fancy_text">{year.name}</span></h2>
+						<ul class="months">
+							{#each year.months as month}
+								<li class="month">
+									<a href="/app/month/{month.id}"><span class="label">{month.name}</span></a>
+								</li>
+							{/each}
+							{#if year.months.length < 12}
+								<li class="add_btn">
+									<button class="btn" on:click|preventDefault={() => addMonth(year.name, year.months.length)}><Plus /><span>Next Month</span></button>
+								</li>
+							{/if}
+						</ul>
+					</li>
+				{/each}
 				<li class="item">
-					<h2 class="h5 year_label"><span class="fancy_text">{year.name}</span></h2>
-					<ul class="months">
-						{#each year.months as month}
-							<li class="month">
-								<a href="/app/month/{month.id}"><span class="label">{month.name}</span></a>
-							</li>
-						{/each}
-						{#if year.months.length < 12}
-							<li class="add_btn">
-								<button class="btn" on:click|preventDefault={() => addMonth(year.name, year.months.length)}><Plus /><span>Next Month</span></button>
-							</li>
-						{/if}
-					</ul>
+					<button class="btn" on:click|preventDefault={() => addYear(nextYear)}><Plus /><span>Start {nextYear}</span></button>
 				</li>
-			{/each}
-			<li class="item">
-				<button class="btn" on:click|preventDefault={() => addYear(nextYear)}><Plus /><span>Start {nextYear}</span></button>
-			</li>
-		</ul>
-	{/if}
-</section>
+			</ul>
+		{/if}
+	</section>
+</main>
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
