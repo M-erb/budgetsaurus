@@ -51,6 +51,9 @@
 
 		active = true
 	}
+
+	const useHalf = () => { if (value) value.amount = Math.floor(amount / 2) }
+	const useFull = () => { if (value) value.amount = amount }
 </script>
 
 <div class="add_share">
@@ -68,6 +71,10 @@
 	{#if active && value}
 		<SelectSharegroupField bind:value={value.shareGroupId} shareGroups={shareGroups} />
 		<CentsToDollarsField label="Amount to share" bind:value={value.amount} />
+		<div class="btn_wrap">
+			<button class="btn __sm" type="button" on:click|preventDefault={useHalf}>half</button>
+			<button class="btn __sm" type="button" on:click|preventDefault={useFull}>Full</button>
+		</div>
 	{/if}
 </div>
 
