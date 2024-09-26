@@ -94,16 +94,19 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 	const updateEntry = await db
 		.update(cats)
 		.set(catData)
-		.where(eq(cats.id, cleanData.id))
+		.where(eq(cats.id, catData.id))
 		.returning().get()
 
-	if (!budgetData) json(updateEntry)
+	if (!budgetData || !budgetData.monthId) return json(updateEntry)
 
-	const updateBudget = budgetData!.id ?
+	// make sure budget has a catId
+	budgetData.catId = updateEntry.id
+
+	const updateBudget = budgetData.id ?
 		await db
 			.update(budgets)
 			.set(budgetData!)
-			.where(eq(budgets.id, budgetData!.id))
+			.where(eq(budgets.id, budgetData.id))
 			.returning().get()
 		:
 		await db
