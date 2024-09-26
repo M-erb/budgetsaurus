@@ -38,9 +38,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		.values(catData)
 		.returning().get()
 
-	if (!budgetData) json(newEntry)
+	if (!budgetData) return json(newEntry)
 
-	budgetData!.catId = newEntry.id
+	budgetData.catId = newEntry.id
 	const newBudget = await db
 		.insert(budgets)
 		.values(budgetData!)
