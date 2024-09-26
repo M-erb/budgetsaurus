@@ -84,4 +84,9 @@
 	.btn_wrap {
 		margin-bottom: var(--size-4);
 	}
+
+	.add_share {
+		position: relative;
+		z-index: 1;
+	}
 </style>
