@@ -17,10 +17,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		error(401, 'unauthorized')
 	}
 
-	const { res: data, err: jsonErr } = await to(request.json())
+	const { res: data, err: jsonErr }: { res: { year: number, month: string } | null, err: unknown | null } = await to(request.json())
 	if (jsonErr) {
 		console.error('jsonErr: ', jsonErr)
-		error(400, 'Bad request')
+		error(400, 'Bad request, missing required fields')
+	}
+
+	if (!data || !data.year || !data.month) {
+		console.error('missing required fields')
+		error(400, 'Bad request, missing required fields')
 	}
 
 	const res = await saveYearMonthDb(data)
