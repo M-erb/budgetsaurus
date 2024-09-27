@@ -1,4 +1,5 @@
 <script lang=ts>
+	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
 
 	interface cat {
@@ -14,13 +15,20 @@
 
 	let active = false
 	let selected: cat|undefined
+	let searchTxt: string = ''
+	let filteredCats: cat[]
 
 	$: selected = value ? cats.find(item => item.id === value) : undefined
+	$: filteredCats = cats.filter(cat => cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase()))
 
 	function select (cat: cat) {
 		value = cat.id
 		active = false
 	}
+
+	onMount(() => {
+		filteredCats = structuredClone(cats)
+	})
 </script>
 
 <div class="select_field_area" class:active>
@@ -37,7 +45,12 @@
 	</button>
 
 	<ul class="dropdown_options">
-		{#each cats as cat }
+		<li class="search">
+			<label>
+				<input type="text" name="search_categories" bind:value={searchTxt} placeholder="search for categories">
+			</label>
+		</li>
+		{#each filteredCats as cat }
 			<li class="option">
 				<button type="button" on:click|preventDefault={() => select(cat)}>
 					<div class="color" style:background-color={cat.color}></div>
@@ -121,20 +134,22 @@
 
 			display: none;
 
-			.option {
+			button {
+				border: none;
+				background-color: transparent;
+				border-radius: var(--radius-md);
+				color: inherit;
+				cursor: pointer;
+				width: 100%;
 				padding: var(--size-1);
 
-				button {
-					border: none;
-					background-color: transparent;
-					color: inherit;
-					cursor: pointer;
-					width: 100%;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				gap: var(--size-4);
 
-					display: flex;
-					justify-content: flex-start;
-					align-items: center;
-					gap: var(--size-4);
+				&:hover {
+					background-color: var(--color-slate-500);
 				}
 			}
 		}

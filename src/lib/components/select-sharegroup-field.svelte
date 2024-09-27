@@ -1,4 +1,5 @@
 <script lang=ts>
+	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
 
 	interface shareGroup {
@@ -6,14 +7,6 @@
 		name: string
 		createdAt: Date|null
 		note: string|null
-	}
-
-	interface share {
-		tranId: number
-		shareGroupId: number
-		amount: number
-		note: string|null
-		createdAt: Date|null
 	}
 
 	export let value: number|undefined
@@ -28,6 +21,10 @@
 		value = shareGroup.id
 		active = false
 	}
+
+	onMount(() => {
+		if (shareGroups.length && !selected) select(shareGroups[0])
+	})
 </script>
 
 <div class="select_field_area" class:active>
