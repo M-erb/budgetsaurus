@@ -1,5 +1,4 @@
 <script lang=ts>
-	import { onMount } from 'svelte'
 	import Dollar from '$lib/icons/dollar.svelte'
 	import { numFormat } from '$lib/lilUtils'
 	export let label = ''
@@ -18,10 +17,6 @@
 		const result = String(numFormat(dollars, { style: 'decimal', min: 2 }))
 		return result
 	}
-
-	onMount(() => {
-
-	})
 </script>
 
 <label class="centsToDollars">
