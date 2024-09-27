@@ -114,7 +114,8 @@
 		<form on:submit|preventDefault={saveNew}>
 			<label>
 				<span class="label">Name</span>
-				<input type="text" bind:value={addNewFields.name}>
+				<!-- svelte-ignore a11y-autofocus -->
+				<input type="text" bind:value={addNewFields.name} autofocus>
 			</label>
 			<label>
 				<span class="label">Color</span>
@@ -137,7 +138,8 @@
 		<form on:submit|preventDefault={saveEdit}>
 			<label>
 				<span class="label">Name</span>
-				<input type="text" bind:value={editFields.name}>
+				<!-- svelte-ignore a11y-autofocus -->
+				<input type="text" bind:value={editFields.name} autofocus>
 			</label>
 			<label>
 				<span class="label">Color</span>
