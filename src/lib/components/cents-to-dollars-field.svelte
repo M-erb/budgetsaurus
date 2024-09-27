@@ -27,7 +27,9 @@
 	<div class="num_field">
 		<Dollar />
 		<input type="text" bind:value={value} />
-		<span class="fake_input">{display}</span>
+		<div class="fake_input">
+			<span class="num_display">{display}</span>
+		</div>
 	</div>
 </label>
 
@@ -61,10 +63,35 @@
 			width: 100%;
 			color: var(--color-white);
 			line-height: 1.4;
+
+			.num_display {
+				position: relative;
+
+				&::after {
+					content: '';
+					display: none;
+					position: absolute;
+					top: 0;
+					right: -2px;
+					height: 100%;
+					width: 1px;
+					background-color: var(--color-white);
+
+					animation-name: blink;
+					animation-duration: 1.2s;
+					animation-iteration-count: infinite;
+					animation-timing-function: cubic-bezier(1, 0, 0, 1);
+					animation-fill-mode: both;
+				}
+			}
 		}
 
 		&:focus-within {
 			outline: 3px solid var(--color-blue);
+
+			.fake_input .num_display::after {
+				display: block;
+			}
 		}
 
 		input {
