@@ -8,14 +8,6 @@
 		note: string|null
 	}
 
-	interface share {
-		tranId: number
-		shareGroupId: number
-		amount: number
-		note: string|null
-		createdAt: Date|null
-	}
-
 	export let value: number|undefined
 	export let shareGroups: shareGroup[]
 
