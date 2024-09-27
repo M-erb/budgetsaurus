@@ -124,23 +124,17 @@
 
 	async function saveNew () {
 		const {err} = await to(axios.post('/api/incomes', addNewFields))
-		if (err) {
-			console.error('err: ', err)
-			return
-		}
+		if (err) console.error('err: ', err)
+		if (!err) showModal = false
 
-		showModal = false
 		await invalidateAll()
 	}
 
 	async function saveEdit () {
 		const {err} = await to(axios.put('/api/incomes', editFields))
-		if (err) {
-			console.error('err: ', err)
-			return
-		}
+		if (err) console.error('err: ', err)
+		if (!err) showModal = false
 
-		showModal = false
 		await invalidateAll()
 	}
 </script>
