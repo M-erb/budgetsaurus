@@ -55,7 +55,7 @@ async function verifyPost (data:unknown) {
 	const validation = z.object({
 		monthId: z.number(),
 		catId: z.number(),
-		name: z.string(),
+		name: z.string().min(1, '"Name" is a required field'),
 		note: z.string(),
 		amount: z.number().int().nonnegative(),
 		share: z.object({

@@ -3,6 +3,7 @@
 	import { returnMonth, monthsLongList, to } from '$lib/lilUtils'
 	import { createEventDispatcher } from 'svelte'
 	import axios from 'redaxios'
+	import { invalidateAll } from '$app/navigation'
 
 	interface fields {
 		year: number,
@@ -28,6 +29,7 @@
 			return
 		}
 
+		await invalidateAll()
 		dispatch('finished', res?.data)
 	}
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { centsToDollars } from '$lib/lilUtils'
+	import { centsToDollars, fillErrorBag } from '$lib/lilUtils'
 	import { format as formatDate } from 'date-fns'
 	import GroupShare from '$lib/icons/group-share.svelte'
 	import Plus from '$lib/icons/plus.svelte'
@@ -10,48 +10,6 @@
 	import { to } from '$lib/lilUtils'
 	import SelectCatField from '$lib/components/select-cat-field.svelte'
 	import AddShare from '$lib/components/add-share.svelte'
-
-	interface shareItem {
-		id: number
-		createdAt: Date|null
-		note: string|null
-		amount: number
-		shareGroupId: number
-		tranId: number
-		shareGroup: {
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-		}
-	}
-
-	interface transaction {
-		id: number
-		note: string|null
-		date: Date|null
-		name: string
-		createdAt: Date|null
-		catId: number
-		monthId: number
-		amount: number
-		cat: {
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-			color: string
-		}
-		shares: shareItem[]
-	}
-
-	interface cat {
-		id: number
-		note: string|null
-		createdAt: Date|null
-		color: string
-		name: string
-	}
 
 	export let month:{
 		id: number
@@ -77,20 +35,7 @@
 
 	let showModal = false
 	let modalMode: 'addNew'|'edit'|null = null
-
-	interface newFieldsType {
-		monthId: number
-		catId: number
-		name: string
-		note: string|null
-		amount: number
-		share?: {
-			tranId: number
-			shareGroupId: number
-			amount: number
-			note: string|null
-		}
-	}
+	let errorBag: errorBagType = {}
 
 	const addNewFields: newFieldsType = {
 		monthId: month.id,
@@ -98,23 +43,6 @@
 		name: '',
 		amount: 0,
 		note: ''
-	}
-
-	interface editFieldsType {
-		id: number
-		monthId: number
-		catId: number
-		name: string
-		note: string|null
-		amount: number
-		share?: {
-			tranId: number
-			shareGroupId: number
-			id: number
-			amount: number
-			note: string|null
-			createdAt: Date|null
-		}
 	}
 
 	const editFields: editFieldsType = {
@@ -127,6 +55,7 @@
 	}
 
 	function startAddNew () {
+		errorBag = {}
 		delete addNewFields.share
 		addNewFields.monthId = month.id
 		addNewFields.catId = 0
@@ -139,6 +68,7 @@
 	}
 
 	function startEditEntry (entry:transaction) {
+		errorBag = {}
 		delete editFields.share
 		editFields.id = entry.id
 		editFields.monthId = entry.monthId
@@ -164,9 +94,13 @@
 	}
 
 	async function saveNew () {
-		const {err} = await to(axios.post('/api/transactions', addNewFields))
+		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
+
+		const data: apiErr = err.data
+
+		if (data.errors.issues.length) errorBag = fillErrorBag(data.errors.issues)
 
 		await invalidateAll()
 	}
@@ -243,11 +177,18 @@
 
 <Modal bind:showModal on:close={() => modalMode = null}>
 	{#if modalMode === 'addNew'}
+		<h2 class="h5">New Transaction</h2>
+
 		<form on:submit|preventDefault={saveNew}>
-			<label>
+			<label class:is_error={errorBag.name}>
 				<span class="label">Name</span>
 				<!-- svelte-ignore a11y-autofocus -->
 				<input type="text" bind:value={addNewFields.name} autofocus>
+				{#if errorBag.name}
+					<div class="error_space">
+						<p>{errorBag.name}</p>
+					</div>
+				{/if}
 			</label>
 			<CentsToDollarsField
 				label=Amount
@@ -266,6 +207,8 @@
 	{/if}
 
 	{#if modalMode === 'edit'}
+		<h2 class="h5">Edit Transaction</h2>
+
 		<form on:submit|preventDefault={saveEdit}>
 			<label>
 				<span class="label">Name</span>
@@ -273,7 +216,7 @@
 				<input type="text" bind:value={editFields.name} autofocus>
 			</label>
 			<CentsToDollarsField
-				label=Actual
+				label=Amount
 				bind:value={editFields.amount}
 			/>
 			<SelectCatField bind:value={editFields.catId} cats={cats} />
@@ -340,3 +283,78 @@
 		}
 	}
 </style>
+
+<script lang=ts context=module>
+	interface shareItem {
+		id: number
+		createdAt: Date|null
+		note: string|null
+		amount: number
+		shareGroupId: number
+		tranId: number
+		shareGroup: {
+			id: number
+			name: string
+			createdAt: Date|null
+			note: string|null
+		}
+	}
+
+	interface transaction {
+		id: number
+		note: string|null
+		date: Date|null
+		name: string
+		createdAt: Date|null
+		catId: number
+		monthId: number
+		amount: number
+		cat: {
+			id: number
+			name: string
+			createdAt: Date|null
+			note: string|null
+			color: string
+		}
+		shares: shareItem[]
+	}
+
+	interface cat {
+		id: number
+		note: string|null
+		createdAt: Date|null
+		color: string
+		name: string
+	}
+
+	interface newFieldsType {
+		monthId: number
+		catId: number
+		name: string
+		note: string|null
+		amount: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			amount: number
+			note: string|null
+		}
+	}
+
+	interface editFieldsType {
+		id: number
+		monthId: number
+		catId: number
+		name: string
+		note: string|null
+		amount: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			id: number
+			amount: number
+			note: string|null
+			createdAt: Date|null
+		}
+	}
+</script>

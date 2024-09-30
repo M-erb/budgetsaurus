@@ -1,7 +1,9 @@
 <script lang="ts">
-	import type { LayoutData } from './$types';
-	
-	export let data: LayoutData;
+	import type { LayoutData } from './$types'
+	import { SvelteToast } from '@zerodevx/svelte-toast'
+
+	const options = {}
+	export let data: LayoutData
 </script>
 
 <div class="top_area">
@@ -13,6 +15,8 @@
 </div>
 
 <slot />
+
+<SvelteToast {options} />
 
 <style lang="postcss">
 	/* @import '@styles/mediaQueries.pcss'; */
