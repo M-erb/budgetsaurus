@@ -56,22 +56,6 @@ label {
 		padding: var(--size-2) var(--size-2);
 	}
 
-	& .error_space {
-		color: var(--color-red-300);
-		font-size: var(--scale-00);
-		margin-top: var(--size-1);
-	}
-
-	&.is_error {
-		& input, & textarea {
-			border-color: var(--color-red-300);
-		}
-
-		& > span {
-			color: var(--color-red-300);
-		}
-	}
-
 	&.switch {
 		& input {
 			appearance: none;
@@ -123,6 +107,26 @@ label {
 			&:checked::after {
 				background: var(--color-teal-300);
 			}
+		}
+	}
+
+	& .error_space {
+		color: var(--color-red-200);
+		font-size: var(--scale-00);
+		margin-top: var(--size-1);
+	}
+
+	&.is_error {
+		& > .label {
+			color: var(--color-red-400);
+		}
+
+		& input, & textarea {
+			border-color: var(--color-red-400);
+		}
+
+		& > span {
+			color: var(--color-red-400);
 		}
 	}
 }

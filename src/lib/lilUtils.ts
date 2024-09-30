@@ -73,3 +73,13 @@ export const isPositive = (num:number):boolean => {
 
 	return false
 }
+
+export function fillErrorBag (errors: issueApiErr[]) {
+	const results: errorBagType = {}
+	errors.forEach(item => {
+		const key = item.path[0]
+		if (key) results[key] = item.message
+	})
+
+	return results
+}
