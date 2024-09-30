@@ -3,7 +3,7 @@
 	import { numFormat } from '$lib/lilUtils'
 	export let label = ''
 	export let value: number|string
-	let display = ''
+	let display: string = ''
 
 	$: {
 		value = typeof value === 'string' ? Number(value.replace(/\D/g,'')) : Number(value)
@@ -17,6 +17,11 @@
 		const result = String(numFormat(dollars, { style: 'decimal', min: 2 }))
 		return result
 	}
+
+	function controlSelect (e: Event) {
+		const target = e.target as HTMLInputElement
+		target.selectionStart = target.selectionEnd
+	}
 </script>
 
 <label class="centsToDollars">
@@ -26,7 +31,7 @@
 
 	<div class="num_field">
 		<Dollar />
-		<input type="text" bind:value={value} />
+		<input type="text" bind:value={value} on:select={controlSelect} />
 		<div class="fake_input">
 			<span class="num_display">{display}</span>
 		</div>
