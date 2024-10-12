@@ -18,15 +18,18 @@
 	$: nextYearFromDb = isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1
 	$: nextYear = nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
 
-	async function addMonth (yearName: string, monthCount: number) {
-		if (monthCount >= 12) return
+	async function addMonth (year: typeof data.years[0]) {
+		if (year.months.length >= 12) return
+
+		const lastMonth = year.months[year.months.length - 1]
+		const lastMonthIndex = monthsLongList.findIndex(item => item === lastMonth.name)
 
 		const fields = {
-			year: yearName,
-			month: monthsLongList[monthCount]
+			year: year.name,
+			month: monthsLongList[lastMonthIndex + 1]
 		}
 
-		const {res, err} = await to(axios.post('/api/months', fields))
+		const {err} = await to(axios.post('/api/months', fields))
 		if (err) console.error('addMonth err: ', err)
 
 		reloadData()
@@ -38,7 +41,7 @@
 			month: monthsLongList[0]
 		}
 
-		const {res, err} = await to(axios.post('/api/months', fields))
+		const {err} = await to(axios.post('/api/months', fields))
 		if (err) console.error('addYear err: ', err)
 
 		reloadData()
@@ -68,7 +71,7 @@
 							{/each}
 							{#if year.months.length < 12}
 								<li class="add_btn">
-									<button class="btn" on:click|preventDefault={() => addMonth(year.name, year.months.length)}><Plus /><span>Next Month</span></button>
+									<button class="btn" on:click|preventDefault={() => addMonth(year)}><Plus /><span>Next Month</span></button>
 								</li>
 							{/if}
 						</ul>
