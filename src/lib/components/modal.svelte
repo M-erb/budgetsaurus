@@ -37,12 +37,13 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
+	class:active={showModal}
 	bind:this={dialog}
 	on:close={closeModal}
 	on:click|self={closeModal}
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="modal_inner" on:click|stopPropagation>
+	<div class="modal_inner" class:active={showModal} on:click|stopPropagation>
 		<!-- svelte-ignore a11y-autofocus -->
 		<button class=close_btn autofocus on:click|preventDefault={closeModal}><CloseX /></button>
 		<slot />
@@ -56,12 +57,16 @@
 		width: 100vw;
 		height: 100vh;
 
-		display: flex;
+		padding: 0;
+		position: fixed;
+
+		display: none;
 		justify-content: center;
 		align-items: center;
 
-		padding: 0;
-		position: fixed;
+		&.active {
+			display: flex;
+		}
 
 		&::backdrop {
 			background-color: var(--color-slate-900);

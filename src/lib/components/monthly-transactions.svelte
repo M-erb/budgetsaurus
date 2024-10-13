@@ -3,7 +3,7 @@
 	import { format as formatDate } from 'date-fns'
 	import GroupShare from '$lib/icons/group-share.svelte'
 	import Plus from '$lib/icons/plus.svelte'
-	import Modal from './modal.svelte'
+	import Modal from '$lib/components/modal.svelte'
 	import CentsToDollarsField from '$lib/components/cents-to-dollars-field.svelte'
 	import axios from 'redaxios'
 	import { invalidateAll } from '$app/navigation'
