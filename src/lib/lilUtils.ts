@@ -1,7 +1,34 @@
 import { getMonth } from 'date-fns'
 
-export const monthsLongList:monthsLong[] = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-export const monthsShortList:monthsShort[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+export const monthsLongList: monthsLong[] = [
+	'January',
+	'Febuary',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December'
+]
+
+export const monthsShortList: monthsShort[] = [
+	'Jan',
+	'Feb',
+	'Mar',
+	'Apr',
+	'May',
+	'Jun',
+	'Jul',
+	'Aug',
+	'Sep',
+	'Oct',
+	'Nov',
+	'Dec'
+]
 
 // typescript 'overloads': https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads
 export function returnMonth (date:Date, config:{returnType: 'long'}):monthsLong
