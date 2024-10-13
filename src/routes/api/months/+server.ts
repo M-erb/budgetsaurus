@@ -41,7 +41,20 @@ async function verifyPut (data:unknown) {
 		}),
 		month: z.object({
 			id: z.number().gt(0),
-			name: z.string().min(1, '"Name" is a required field')
+			name: z.enum([
+				'January',
+				'Febuary',
+				'March',
+				'April',
+				'May',
+				'June',
+				'July',
+				'August',
+				'September',
+				'October',
+				'November',
+				'December'
+			])
 		}),
 	})
 
@@ -71,7 +84,9 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 	if (verifyErr !== null) error(400, { message: 'missing fields', errors: verifyErr })
 	if (cleanData === null) error(500, 'Something went wrong')
 
-	const res = await updateMonthName(cleanData)
+	const { res, err } = await to(updateMonthName(cleanData))
+	// @ts-expect-error err will always have a message prop
+	if (err) error(400, err.message)
 
 	return json(res)
 }

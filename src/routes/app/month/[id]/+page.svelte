@@ -35,7 +35,21 @@
 	}
 
 	async function saveMonthName () {
-		
+		const payload = {
+			year: {
+				id: data.month.yearId
+			},
+			month: {
+				id: data.month.id,
+				name: monthName
+			}
+		}
+
+		const {err} = await to(axios.put('/api/months', payload))
+		if (err) console.error('err: ', err)
+		if (!err) showModal = false
+
+		await invalidateAll()
 	}
 </script>
 
