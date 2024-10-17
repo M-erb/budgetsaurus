@@ -3,7 +3,7 @@
 	import { format as formatDate } from 'date-fns'
 	import GroupShare from '$lib/icons/group-share.svelte'
 	import Plus from '$lib/icons/plus.svelte'
-	import Modal from './modal.svelte'
+	import Modal from '$lib/components/modal.svelte'
 	import CentsToDollarsField from '$lib/components/cents-to-dollars-field.svelte'
 	import axios from 'redaxios'
 	import { invalidateAll } from '$app/navigation'
@@ -95,12 +95,14 @@
 
 	async function saveNew () {
 		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
-		if (err) console.error('err: ', err)
+		if (err) {
+			console.error('err: ', err)
+
+			const data: apiErr = err.data
+			if (data?.errors?.issues?.length) errorBag = fillErrorBag(data.errors.issues)
+		}
+
 		if (!err) showModal = false
-
-		const data: apiErr = err.data
-
-		if (data.errors.issues.length) errorBag = fillErrorBag(data.errors.issues)
 
 		await invalidateAll()
 	}
@@ -178,6 +180,16 @@
 <Modal bind:showModal on:close={() => modalMode = null}>
 	{#if modalMode === 'addNew'}
 		<h2 class="h5">New Transaction</h2>
+
+		{#if Object.keys(errorBag).length}
+			<ul class="err_list">
+				{#each Object.entries(errorBag) as [key, value]}
+					<li class="err_item">
+						<p class="">{value}</p>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 
 		<form on:submit|preventDefault={saveNew}>
 			<label class:is_error={errorBag.name}>

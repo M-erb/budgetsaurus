@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 async function verifyPost (data:unknown) {
 	const validation = z.object({
 		monthId: z.number(),
-		catId: z.number(),
+		catId: z.number().min(1, 'Category is required'),
 		name: z.string().min(1, '"Name" is a required field'),
 		note: z.string(),
 		amount: z.number().int().nonnegative(),
@@ -143,7 +143,7 @@ async function verifyPut (data:unknown) {
 	const validation = z.object({
 		id: z.number(),
 		monthId: z.number(),
-		catId: z.number(),
+		catId: z.number().min(1, 'Category is required'),
 		name: z.string(),
 		note: z.string(),
 		amount: z.number().int().nonnegative(),
