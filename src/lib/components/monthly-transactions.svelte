@@ -9,6 +9,7 @@
 	import { invalidateAll } from '$app/navigation'
 	import { to } from '$lib/lilUtils'
 	import SelectCatField from '$lib/components/select-cat-field.svelte'
+	import MiltiSelectCatField from '$lib/components/multi-select-cat-field.svelte'
 	import AddShare from '$lib/components/add-share.svelte'
 
 	export let month:{
@@ -37,6 +38,7 @@
 	let modalMode: 'addNew'|'edit'|null = null
 	let errorBag: errorBagType = {}
 
+	let newSelectedFields: cat[] = []
 	const addNewFields: newFieldsType = {
 		monthId: month.id,
 		catId: 0,
@@ -55,6 +57,7 @@
 	}
 
 	function startAddNew () {
+		newSelectedFields = []
 		errorBag = {}
 		delete addNewFields.share
 		addNewFields.monthId = month.id
@@ -65,6 +68,20 @@
 
 		showModal = true
 		modalMode = 'addNew'
+	}
+
+	async function saveNew () {
+		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
+		if (err) {
+			console.error('err: ', err)
+
+			const data: apiErr = err.data
+			if (data?.errors?.issues?.length) errorBag = fillErrorBag(data.errors.issues)
+		}
+
+		if (!err) showModal = false
+
+		await invalidateAll()
 	}
 
 	function startEditEntry (entry:transaction) {
@@ -91,20 +108,6 @@
 
 		modalMode = 'edit'
 		showModal = true
-	}
-
-	async function saveNew () {
-		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
-		if (err) {
-			console.error('err: ', err)
-
-			const data: apiErr = err.data
-			if (data?.errors?.issues?.length) errorBag = fillErrorBag(data.errors.issues)
-		}
-
-		if (!err) showModal = false
-
-		await invalidateAll()
 	}
 
 	async function saveEdit () {
@@ -177,7 +180,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal on:close={() => modalMode = null}>
+<Modal bind:showModal on:close={() => modalMode = null} >
 	{#if modalMode === 'addNew'}
 		<h2 class="h5">New Transaction</h2>
 
@@ -207,6 +210,7 @@
 				bind:value={addNewFields.amount}
 			/>
 			<SelectCatField bind:value={addNewFields.catId} cats={cats} />
+			<MiltiSelectCatField value={[]} cats={cats} />
 			<AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
 			<label>
 				<span class="label">Note</span>
@@ -341,10 +345,10 @@
 
 	interface newFieldsType {
 		monthId: number
-		catId: number
 		name: string
-		note: string|null
 		amount: number
+		note: string|null
+		catId: number
 		share?: {
 			tranId: number
 			shareGroupId: number
