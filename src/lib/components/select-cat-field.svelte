@@ -29,12 +29,21 @@
 	onMount(() => {
 		filteredCats = structuredClone(cats)
 	})
+
+	function handleKey (e:KeyboardEvent) {
+		if (e.key === 'ArrowDown') active = true
+	}
 </script>
 
-<div class="select_field_area" class:active>
+<div class="select_field_area" class:active on:blur={() => active = !active}>
 	<span class="label">Category</span>
 
-	<button class="select_field" type="button" on:click={() => active = !active}>
+	<button
+		class="select_field"
+		type="button"
+		on:click={() => active = !active}
+		on:keydown={handleKey}
+	>
 		<div class="name_area">
 			{#if selected}
 				<div class="color" style:background-color={selected.color}></div>
