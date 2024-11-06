@@ -209,7 +209,7 @@
 				label=Amount
 				bind:value={addNewFields.amount}
 			/>
-			<SelectCatField bind:value={addNewFields.catId} cats={cats} />
+			<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
 			<MiltiSelectCatField value={[]} cats={cats} />
 			<AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
 			<label>
