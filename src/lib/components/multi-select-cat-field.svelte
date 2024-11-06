@@ -83,7 +83,6 @@
 	.select_field_area {
 		margin-bottom: var(--size-4);
 		position: relative;
-		z-index: 2;
 
 		.color {
 			width: 24px;

@@ -76,7 +76,6 @@
 	.select_field_area {
 		margin-bottom: var(--size-4);
 		position: relative;
-		z-index: 2;
 
 		.color {
 			width: 24px;
@@ -164,6 +163,8 @@
 		}
 
 		&.active {
+			z-index: 10;
+
 			.select_field {
 				outline: 3px solid var(--color-blue);
 
