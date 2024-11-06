@@ -5,7 +5,7 @@
 	import axios from 'redaxios'
 	import { invalidateAll } from '$app/navigation'
 
-	interface fields {
+	interface fieldsType {
 		year: number,
 		month: monthsLong
 	}
@@ -16,7 +16,7 @@
 	export let offsetMonth: number = 0
 	export let month: number|null = null
 
-	const fields: fields = {
+	const fields: fieldsType = {
 		year,
 		month: month !== null ? monthsLongList[month] : returnMonth(addMonths(today, offsetMonth), { returnType: 'long' })
 	}
