@@ -12,49 +12,34 @@
 	import MiltiSelectCatField from '$lib/components/multi-select-cat-field.svelte'
 	import AddShare from '$lib/components/add-share.svelte'
 
-	export let month:{
-		id: number
-		note: string|null
-		name: string
-		yearId: number
-		transactions: transaction[]
-		year: {
-			id: number
-			name: string
-			note: string|null
-		}
-	}
+	const {
+		month,
+		cats,
+		shareGroups
+	} : props = $props()
 
-	export let cats: cat[]
+	let showModal = $state(false)
+	let modalMode: 'addNew'|'edit'|null = $state(null)
+	let errorBag: errorBagType = $state({})
 
-	export let shareGroups: {
-		id: number
-		name: string
-		createdAt: Date|null
-		note: string|null
-	}[]
-
-	let showModal = false
-	let modalMode: 'addNew'|'edit'|null = null
-	let errorBag: errorBagType = {}
-
-	let newSelectedFields: cat[] = []
-	const addNewFields: newFieldsType = {
+	let newSelectedFields: cat[] = $state([])
+	let multiTranAdd: newFieldsType[] = $state([])
+	const addNewFields: newFieldsType = $state({
 		monthId: month.id,
 		catId: 0,
 		name: '',
 		amount: 0,
 		note: ''
-	}
+	})
 
-	const editFields: editFieldsType = {
+	const editFields: editFieldsType = $state({
 		id: 0,
 		monthId: 0,
 		catId: 0,
 		name: '',
 		note: '',
 		amount: 0
-	}
+	})
 
 	function startAddNew () {
 		newSelectedFields = []
@@ -70,7 +55,9 @@
 		modalMode = 'addNew'
 	}
 
-	async function saveNew () {
+	async function saveNew (e: Event) {
+		e.preventDefault()
+
 		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
 		if (err) {
 			console.error('err: ', err)
@@ -110,7 +97,9 @@
 		showModal = true
 	}
 
-	async function saveEdit () {
+	async function saveEdit (e: Event) {
+		e.preventDefault()
+
 		const {err} = await to(axios.put('/api/transactions', editFields))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
@@ -129,7 +118,7 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Transactions</h2>
 			<div class="btn_wrap">
-				<button class="btn_round" on:click={startAddNew}><Plus /></button>
+				<button class="btn_round" onclick={startAddNew}><Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
@@ -149,7 +138,7 @@
 			{#each month.transactions as item}
 				{@const amount = combineShares(item.amount, item.shares)}
 				{@const hasShares = Boolean(item.shares.length)}
-				<button class="ft_row" on:click={() => startEditEntry(item)} title="Edit Income">
+				<button class="ft_row" onclick={() => startEditEntry(item)} title="Edit Income">
 					<div class="ft_col tran_color">
 						<div class="color_box" style:background-color={item.cat.color}></div>
 					</div>
@@ -175,7 +164,7 @@
 		</div>
 
 		<div class="btn_wrap __left __t_space">
-			<button class="btn" on:click={startAddNew}><Plus /><span>Transaction</span></button>
+			<button class="btn" onclick={startAddNew}><Plus /><span>Transaction</span></button>
 		</div>
 	</div>
 </section>
@@ -194,10 +183,10 @@
 			</ul>
 		{/if}
 
-		<form on:submit|preventDefault={saveNew}>
+		<form onsubmit={saveNew}>
 			<label class:is_error={errorBag.name}>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
+				<!-- svelte-ignore a11y_autofocus -->
 				<input type="text" bind:value={addNewFields.name} autofocus>
 				{#if errorBag.name}
 					<div class="error_space">
@@ -225,10 +214,10 @@
 	{#if modalMode === 'edit'}
 		<h2 class="h5">Edit Transaction</h2>
 
-		<form on:submit|preventDefault={saveEdit}>
+		<form onsubmit={saveEdit}>
 			<label>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
+				<!-- svelte-ignore a11y_autofocus -->
 				<input type="text" bind:value={editFields.name} autofocus>
 			</label>
 			<CentsToDollarsField
@@ -300,7 +289,29 @@
 	}
 </style>
 
-<script lang=ts context=module>
+<script lang=ts module>
+	interface props {
+		month: {
+			id: number
+			note: string|null
+			name: string
+			yearId: number
+			transactions: transaction[]
+			year: {
+				id: number
+				name: string
+				note: string|null
+			}
+		},
+		cats: cat[],
+		shareGroups: {
+			id: number
+			name: string
+			createdAt: Date|null
+			note: string|null
+		}[]
+	}
+
 	interface shareItem {
 		id: number
 		createdAt: Date|null
