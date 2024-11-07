@@ -51,6 +51,8 @@
 </dialog>
 
 <style lang=postcss>
+	@import '@styles/mediaQueries.pcss';
+
 	dialog {
 		background-color: transparent;
 		border: none;
@@ -77,12 +79,17 @@
 			position: relative;
 			padding: var(--size-7) var(--size-4) var(--size-4);
 
-			width: 100%;
+			width: auto;
 			max-width: 360px;
 			border-radius: var(--radius-xl);
 			background-color: var(--color-slate-700);
 			border: 4px solid var(--color-blue-200);
 			color: var(--color-white);
+
+			@media (--md) {
+				/* width: 80px; */
+				max-width: 600px;
+			}
 		}
 
 		&[open] {
