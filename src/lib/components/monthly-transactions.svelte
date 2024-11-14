@@ -11,6 +11,8 @@
 	import SelectCatField from '$lib/components/select-cat-field.svelte'
 	import MiltiSelectCatField from '$lib/components/multi-select-cat-field.svelte'
 	import AddShare from '$lib/components/add-share.svelte'
+	import DisplayCat from '$lib/components/display-cat-field.svelte'
+  import { untrack } from 'svelte';
 
 	const {
 		month,
@@ -19,17 +21,43 @@
 	} : props = $props()
 
 	let showModal = $state(false)
-	let modalMode: 'addNew'|'edit'|null = $state(null)
+	let modalMode: 'addNew'|'edit'|'addMulti'|null = $state(null)
 	let errorBag: errorBagType = $state({})
 
-	let newSelectedFields: cat[] = $state([])
-	let multiTranAdd: newFieldsType[] = $state([])
+	let newSelectedCats: cat[] = $state([])
+	let multiNewFields: newFieldsType[] = $state([])
 	const addNewFields: newFieldsType = $state({
 		monthId: month.id,
 		catId: 0,
 		name: '',
 		amount: 0,
 		note: ''
+	})
+
+	$inspect(newSelectedCats)
+	$inspect(multiNewFields)
+
+	$effect(() => {
+		// Remove multiNewField items that are not selectedCats
+		// loop backwards since we are potentially removing items
+		for (let i = multiNewFields.length - 1; i >= 0; i--) {
+			const fieldObj = multiNewFields[i]
+			const match = untrack(() => newSelectedCats.find(item => item.id === fieldObj.catId))
+			if (match === undefined) untrack(() => multiNewFields.splice(i, 1))
+		}
+
+		// - loop through selectedCats, if item matches a multiNewField then do nothing, otherwise add a new field item to multiNewfield
+		for (let i = 0; i < newSelectedCats.length; i++) {
+			const selectedCat = newSelectedCats[i]
+			const match = untrack(() => multiNewFields.find(item => item.catId === selectedCat.id))
+			if (match === undefined) untrack(() => multiNewFields.push({
+				monthId: month.id,
+				catId: selectedCat.id,
+				name: addNewFields.name,
+				amount: 0,
+				note: ''
+			}))
+		}
 	})
 
 	const editFields: editFieldsType = $state({
@@ -42,7 +70,6 @@
 	})
 
 	function startAddNew () {
-		newSelectedFields = []
 		errorBag = {}
 		delete addNewFields.share
 		addNewFields.monthId = month.id
@@ -53,6 +80,21 @@
 
 		showModal = true
 		modalMode = 'addNew'
+	}
+
+	function startAddMulti () {
+		newSelectedCats = []
+		multiNewFields = []
+		errorBag = {}
+		delete addNewFields.share
+		addNewFields.monthId = month.id
+		addNewFields.catId = 0
+		addNewFields.name = ''
+		addNewFields.amount = 0
+		addNewFields.note = ''
+
+		showModal = true
+		modalMode = 'addMulti'
 	}
 
 	async function saveNew (e: Event) {
@@ -69,6 +111,10 @@
 		if (!err) showModal = false
 
 		await invalidateAll()
+	}
+
+	async function saveMulti (e: Event) {
+
 	}
 
 	function startEditEntry (entry:transaction) {
@@ -118,7 +164,8 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Transactions</h2>
 			<div class="btn_wrap">
-				<button class="btn_round" onclick={startAddNew}><Plus /></button>
+				<button class="btn_round" onclick={startAddNew} title="Add new transaction"><Plus /></button>
+				<button class="btn_round" onclick={startAddMulti} title="Add multible new transactions"><Plus /> <Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
@@ -170,6 +217,63 @@
 </section>
 
 <Modal bind:showModal on:close={() => modalMode = null} >
+	{#if modalMode === 'addMulti'}
+		<h2 class="h5">Multi Transaction</h2>
+
+		{#if Object.keys(errorBag).length}
+			<ul class="err_list">
+				{#each Object.entries(errorBag) as [key, value]}
+					<li class="err_item">
+						<p class="">{value}</p>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		<form onsubmit={saveMulti}>
+			<div class="split_area">
+				<div class="main">
+					<label class:is_error={errorBag.name}>
+						<span class="label">Name</span>
+						<!-- svelte-ignore a11y_autofocus -->
+						<input type="text" bind:value={addNewFields.name} autofocus>
+						{#if errorBag.name}
+							<div class="error_space">
+								<p>{errorBag.name}</p>
+							</div>
+						{/if}
+					</label>
+					<CentsToDollarsField
+						label=Amount
+						bind:value={addNewFields.amount}
+					/>
+					<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
+					<MiltiSelectCatField value={newSelectedCats} cats={cats} />
+					<!-- <AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
+					<label>
+						<span class="label">Note</span>
+						<textarea bind:value={addNewFields.note}></textarea>
+					</label> -->
+				</div>
+				<div class="multi_list">
+					{#each multiNewFields as tranItem}
+						<!-- <p class="display">{ tranItem.name }</p> -->
+						<DisplayCat value={tranItem.catId} cats={cats} />
+						<CentsToDollarsField
+							label=Amount
+							bind:value={tranItem.amount}
+						/>
+						<AddShare bind:value={tranItem.share} amount={tranItem.amount} tranId={0} shareGroups={shareGroups} />
+					{/each}
+				</div>
+			</div>
+
+			<div class="btn_wrap __right">
+				<button class="btn" type="submit">Submit</button>
+			</div>
+		</form>
+	{/if}
+
 	{#if modalMode === 'addNew'}
 		<h2 class="h5">New Transaction</h2>
 
@@ -199,12 +303,13 @@
 				bind:value={addNewFields.amount}
 			/>
 			<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
-			<MiltiSelectCatField value={[]} cats={cats} />
+			<MiltiSelectCatField value={newSelectedCats} cats={cats} />
 			<AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={addNewFields.note}></textarea>
 			</label>
+
 			<div class="btn_wrap __right">
 				<button class="btn" type="submit">Submit</button>
 			</div>
@@ -239,6 +344,30 @@
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
+
+	.split_area {
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		gap: var(--size-4);
+
+		.main {
+			flex: 1 1 auto;
+		}
+
+		.multi_list {
+			.display {
+				color: var(--theme-text-1);
+				margin-bottom: var(--size-2);
+			}
+		}
+	}
+
+	form {
+		@media (--md) {
+			min-width: 360px;
+		}
+	}
 
 	.sub_head {
 		display: flex;
