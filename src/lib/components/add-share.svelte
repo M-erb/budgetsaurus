@@ -58,13 +58,13 @@
 
 <div class="add_share">
 	<div class="btn_wrap">
-		<button class="btn" type="button" on:click={activate}>
+		<button class="btn __alt __sm" type="button" on:click={activate}>
 			{#if active}
 				<Minus />
 				{:else}
 				<Plus />
 			{/if}
-			<span>{active ? 'Remove Share' : 'Add Share'}</span>
+			<span>Share</span>
 		</button>
 	</div>
 
@@ -72,8 +72,8 @@
 		<SelectSharegroupField bind:value={value.shareGroupId} shareGroups={shareGroups} />
 		<CentsToDollarsField label="Amount to share" bind:value={value.amount} />
 		<div class="btn_wrap">
-			<button class="btn __sm" type="button" on:click|preventDefault={useHalf}>half</button>
-			<button class="btn __sm" type="button" on:click|preventDefault={useFull}>Full</button>
+			<button class="btn __alt __sm" type="button" on:click|preventDefault={useHalf}>half</button>
+			<button class="btn __alt __sm" type="button" on:click|preventDefault={useFull}>Full</button>
 		</div>
 	{/if}
 </div>
@@ -83,5 +83,12 @@
 
 	.btn_wrap {
 		margin-bottom: var(--size-4);
+	}
+
+	.btn {
+		& :global(svg) {
+			width: 16px;
+			height: 16px;
+		}
 	}
 </style>

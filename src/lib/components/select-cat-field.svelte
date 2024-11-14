@@ -46,7 +46,7 @@
 	>
 		<div class="name_area">
 			{#if selected}
-				<div class="color" style:background-color={selected.color}></div>
+				<div class="cat_color" style:background-color={selected.color}></div>
 			{/if}
 			<span class="selected_value">{ selected ? selected.name : 'Select a Category' }</span>
 		</div>
@@ -62,7 +62,7 @@
 		{#each filteredCats as cat }
 			<li class="option">
 				<button type="button" on:click|preventDefault={() => select(cat)}>
-					<div class="color" style:background-color={cat.color}></div>
+					<div class="cat_color" style:background-color={cat.color}></div>
 					<span class="cat_name">{cat.name}</span>
 				</button>
 			</li>
@@ -76,12 +76,6 @@
 	.select_field_area {
 		margin-bottom: var(--size-4);
 		position: relative;
-
-		.color {
-			width: 24px;
-			height: 24px;
-			border-radius: var(--radius-full);
-		}
 
 		& > .label {
 			display: block;

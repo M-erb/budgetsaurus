@@ -14,7 +14,7 @@ label {
 
 	& input, & textarea {
 		width: 100%;
-		min-width: 200px;
+		min-width: none;
 		font-family: var(--font-body);
 		font-size: var(--scale-00);
 		color: var(--color-white);
@@ -135,14 +135,14 @@ label {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	gap: var(--size-2);
+	gap: var(--size-1);
 	flex: 0 0 auto;
 
 	border: none;
 	border-radius: var(--radius-md);
 	background-color: var(--color-blue);
 	padding: var(--size-2) var(--size-4);
-	min-width: var(--size-44);
+	min-width: auto;
 	color: var(--color-white);
 	font-weight: 700;
 	font-size: var(--scale-1);
@@ -181,8 +181,21 @@ label {
 
 	&.__sm {
 		font-size: var(--scale-0);
-		padding: var(--size-3) var(--size-4);
+		padding: var(--size-1) var(--size-2);
 		min-width: auto;
+	}
+
+	&.__alt {
+		color: var(--color-grey-700);
+		background-color: var(--color-white);
+
+		&:hover {
+			background-color: var(--color-slate-200);
+		}
+
+		&.__active {
+			background-color: var(--color-slate-300);
+		}
 	}
 }
 
@@ -227,7 +240,7 @@ label {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	gap: var(--size-2);
+	/* gap: var(--size-1); */
 	flex: 0 0 auto;
 
 	border: none;
