@@ -22,10 +22,12 @@
 
 	let showModal = $state(false)
 	let modalMode: 'addNew'|'edit'|'addMulti'|null = $state(null)
+	let lgModal: boolean = $state(false)
 	let errorBag: errorBagType = $state({})
 
 	let newSelectedCats: cat[] = $state([])
 	let multiNewFields: newFieldsType[] = $state([])
+	let totalMultiFields: number = $derived.by(() => ( multiNewFields.reduce((accum, item) => (item.amount + accum), 0) ))
 	const addNewFields: newFieldsType = $state({
 		monthId: month.id,
 		catId: 0,
@@ -33,6 +35,7 @@
 		amount: 0,
 		note: ''
 	})
+	let totalMultiRemaining: number = $derived(totalMultiFields - addNewFields.amount)
 
 	$inspect(newSelectedCats)
 	$inspect(multiNewFields)
@@ -94,6 +97,7 @@
 		addNewFields.note = ''
 
 		showModal = true
+		lgModal = true
 		modalMode = 'addMulti'
 	}
 
@@ -216,7 +220,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal on:close={() => modalMode = null} >
+<Modal bind:showModal bind:lgModal on:close={() => modalMode = null} >
 	{#if modalMode === 'addMulti'}
 		<h2 class="h5">Multi Transaction</h2>
 
@@ -244,31 +248,31 @@
 						{/if}
 					</label>
 					<CentsToDollarsField
-						label=Amount
+						label="Total Amount"
 						bind:value={addNewFields.amount}
 					/>
-					<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
 					<MiltiSelectCatField value={newSelectedCats} cats={cats} />
-					<!-- <AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
-					<label>
-						<span class="label">Note</span>
-						<textarea bind:value={addNewFields.note}></textarea>
-					</label> -->
+
+					<div class="total_remain">
+						<p class="label" class:good={totalMultiRemaining === 0}>Total Remaining: {`${totalMultiRemaining > 0 ? '+' : ''}`}{centsToDollars(totalMultiRemaining)}</p>
+					</div>
 				</div>
 				<div class="multi_list">
 					{#each multiNewFields as tranItem}
-						<!-- <p class="display">{ tranItem.name }</p> -->
-						<DisplayCat value={tranItem.catId} cats={cats} />
-						<CentsToDollarsField
-							label=Amount
-							bind:value={tranItem.amount}
-						/>
-						<AddShare bind:value={tranItem.share} amount={tranItem.amount} tranId={0} shareGroups={shareGroups} />
+						<div class="item_area">
+							<!-- <p class="display">{ tranItem.name }</p> -->
+							<DisplayCat value={tranItem.catId} cats={cats} />
+							<CentsToDollarsField
+								label=Amount
+								bind:value={tranItem.amount}
+							/>
+							<AddShare bind:value={tranItem.share} amount={tranItem.amount} tranId={0} shareGroups={shareGroups} />
+						</div>
 					{/each}
 				</div>
 			</div>
 
-			<div class="btn_wrap __right">
+			<div class="btn_wrap __left">
 				<button class="btn" type="submit">Submit</button>
 			</div>
 		</form>
@@ -347,18 +351,35 @@
 
 	.split_area {
 		display: flex;
-		justify-content: center;
+		justify-content: flex-start;
 		align-items: flex-start;
 		gap: var(--size-4);
 
 		.main {
-			flex: 1 1 auto;
+			flex: 0 0 auto;
+			margin-bottom: var(--size-4);
 		}
 
 		.multi_list {
+			display: flex;
+			justify-content: flex-start;
+			align-items: flex-start;
+			flex-wrap: wrap;
+			gap: var(--size-4);
+
 			.display {
 				color: var(--theme-text-1);
 				margin-bottom: var(--size-2);
+			}
+		}
+
+		.total_remain {
+			.label {
+				color: var(--color-red);
+
+				&.good {
+					color: var(--color-green);
+				}
 			}
 		}
 	}
