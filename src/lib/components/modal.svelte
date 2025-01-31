@@ -4,7 +4,8 @@
 	import { browser } from '$app/environment'
 
 	const dispatch = createEventDispatcher()
-	export let showModal:boolean
+	export let showModal:boolean = false
+	export let lgModal:boolean = false
 
 	$: {
 		if (showModal && browser) bodyStyles()
@@ -13,6 +14,7 @@
 
 	function closeModal () {
 		showModal = false
+		lgModal = false
 		dispatch('close')
 	}
 
@@ -32,6 +34,7 @@
 <div
 	class="Modal"
 	class:active={showModal}
+	class:lgModal={lgModal}
 	on:close={closeModal}
 	on:click|self={closeModal}
 	aria-roledescription="dialog"
@@ -123,6 +126,19 @@
 
 			&:hover {
 				color: var(--color-red-200);
+			}
+		}
+
+		&.lgModal {
+			align-items: stretch;
+
+			.modal_inner {
+				width: 100%;
+				height: 100%;
+
+				@media (--md) {
+					max-width: 100%;
+				}
 			}
 		}
 	}
