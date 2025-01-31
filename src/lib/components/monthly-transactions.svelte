@@ -252,10 +252,6 @@
 						bind:value={addNewFields.amount}
 					/>
 					<MiltiSelectCatField value={newSelectedCats} cats={cats} />
-
-					<div class="total_remain">
-						<p class="label" class:good={totalMultiRemaining === 0}>Total Remaining: {`${totalMultiRemaining > 0 ? '+' : ''}`}{centsToDollars(totalMultiRemaining)}</p>
-					</div>
 				</div>
 				<div class="multi_list">
 					{#each multiNewFields as tranItem}
@@ -272,6 +268,9 @@
 				</div>
 			</div>
 
+			<div class="total_remain">
+				<p class="label" class:good={totalMultiRemaining === 0}>Total Remaining: {`${totalMultiRemaining > 0 ? '+' : ''}`}{centsToDollars(totalMultiRemaining)}</p>
+			</div>
 			<div class="btn_wrap __left">
 				<button class="btn" type="submit">Submit</button>
 			</div>
@@ -353,6 +352,7 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: flex-start;
+		flex-wrap: wrap;
 		gap: var(--size-4);
 
 		.main {
@@ -361,6 +361,7 @@
 		}
 
 		.multi_list {
+			flex: 1 1 auto;
 			display: flex;
 			justify-content: flex-start;
 			align-items: flex-start;
@@ -372,8 +373,11 @@
 				margin-bottom: var(--size-2);
 			}
 		}
+	}
 
-		.total_remain {
+	.total_remain {
+			margin-bottom: var(--size-4);
+
 			.label {
 				color: var(--color-red);
 
@@ -382,7 +386,6 @@
 				}
 			}
 		}
-	}
 
 	form {
 		@media (--md) {
