@@ -6,17 +6,9 @@
 	const dispatch = createEventDispatcher()
 	export let showModal:boolean
 
-	let dialog:HTMLDialogElement
-
 	$: {
-		if (dialog && dialog.showModal && showModal) {
-			if (browser) bodyStyles()
-			dialog.showModal()
-		}
-		if (dialog && dialog.close && !showModal) {
-			if (browser) undoBodyStyles()
-			dialog.close()
-		}
+		if (showModal && browser) bodyStyles()
+		if (!showModal && browser) undoBodyStyles()
 	}
 
 	function closeModal () {
@@ -36,11 +28,14 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	class="Modal"
 	class:active={showModal}
-	bind:this={dialog}
 	on:close={closeModal}
 	on:click|self={closeModal}
+	aria-roledescription="dialog"
+	aria-modal="true"
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="modal_inner" class:active={showModal} on:click|stopPropagation>
@@ -48,19 +43,26 @@
 		<button class=close_btn autofocus on:click|preventDefault={closeModal}><CloseX /></button>
 		<slot />
 	</div>
-</dialog>
+</div>
 
 <style lang=postcss>
 	@import '@styles/mediaQueries.pcss';
 
-	dialog {
+	.Modal {
 		background-color: transparent;
 		border: none;
-		width: 100vw;
-		height: 100vh;
+		min-width: calc(100vw - 32px);
+		max-width: calc(100vw - 32px);
+		min-height: calc(100vh - 32px);
+		margin: 16px;
 
 		padding: 0;
 		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 999;
 
 		display: none;
 		justify-content: center;
@@ -70,25 +72,33 @@
 			display: flex;
 		}
 
-		&::backdrop {
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: -1;
 			background-color: var(--color-slate-900);
 			opacity: .9;
 		}
 
 		.modal_inner {
 			position: relative;
-			padding: var(--size-7) var(--size-4) var(--size-4);
+			padding: var(--size-7) var(--size-5) var(--size-5);
 
 			width: auto;
-			max-width: 360px;
+			max-height: calc(100vh - 32px);
+			overflow: auto;
+			max-width: calc(100vh - 32px);
 			border-radius: var(--radius-xl);
 			background-color: var(--color-slate-700);
 			border: 4px solid var(--color-blue-200);
 			color: var(--color-white);
 
 			@media (--md) {
-				/* width: 80px; */
-				max-width: 600px;
+				max-width: 80%;
 			}
 		}
 
