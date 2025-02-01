@@ -6,19 +6,23 @@
 	import axios from 'redaxios'
 	import { to, monthsLongList } from '$lib/lilUtils'
 
-	export let data:PageServerData
+	interface Props {
+		data: PageServerData
+	}
+
+	let { data }: Props = $props()
 	const today = new Date()
 	let isEmpty = !Boolean(data.years.length)
 
 	// figure out what the appropriate next year is
 	let nextYearFromToday = today.getFullYear() + 1
-	let nextYearFromDb: number
-	let nextYear: number
+	let nextYearFromDb: number = $derived(isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1)
+	let nextYear: number = $derived(
+		nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
+	)
 
-	$: nextYearFromDb = isEmpty ? 0 : Number(data.years.at(-1)?.name) + 1
-	$: nextYear = nextYearFromDb > nextYearFromToday ? nextYearFromDb : nextYearFromToday
-
-	async function addMonth (year: typeof data.years[0]) {
+	async function addMonth(year: (typeof data.years)[0], e: Event) {
+		e.preventDefault()
 		if (year.months.length >= 12) return
 
 		const lastMonth = year.months[year.months.length - 1]
@@ -29,25 +33,26 @@
 			month: monthsLongList[lastMonthIndex + 1]
 		}
 
-		const {err} = await to(axios.post('/api/months', fields))
+		const { err } = await to(axios.post('/api/months', fields))
 		if (err) console.error('addMonth err: ', err)
 
 		reloadData()
 	}
 
-	async function addYear (year: number) {
+	async function addYear(year: number, e: Event) {
+		e.preventDefault()
 		const fields = {
 			year: String(year),
 			month: monthsLongList[0]
 		}
 
-		const {err} = await to(axios.post('/api/months', fields))
+		const { err } = await to(axios.post('/api/months', fields))
 		if (err) console.error('addYear err: ', err)
 
 		reloadData()
 	}
 
-	function reloadData () {
+	function reloadData() {
 		invalidateAll()
 	}
 </script>
@@ -71,14 +76,16 @@
 							{/each}
 							{#if year.months.length < 12}
 								<li class="add_btn">
-									<button class="btn" on:click|preventDefault={() => addMonth(year)}><Plus /><span>Next Month</span></button>
+									<button class="btn" onclick={e => addMonth(year, e)}
+										><Plus /><span>Next Month</span></button>
 								</li>
 							{/if}
 						</ul>
 					</li>
 				{/each}
 				<li class="item">
-					<button class="btn" on:click|preventDefault={() => addYear(nextYear)}><Plus /><span>Start {nextYear}</span></button>
+					<button class="btn" onclick={e => addYear(nextYear, e)}
+						><Plus /><span>Start {nextYear}</span></button>
 				</li>
 			</ul>
 		{/if}
@@ -110,7 +117,7 @@
 					padding: var(--size-2) var(--size-4);
 					text-decoration: none;
 					border: 2px solid var(--color-slate-700);
-					transition: border-color .3s ease-in-out;
+					transition: border-color 0.3s ease-in-out;
 
 					&:hover {
 						border-color: var(--color-blue-200);

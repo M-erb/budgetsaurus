@@ -1,54 +1,62 @@
-<script lang=ts>
+<script lang="ts">
+	import { run, self, createBubbler, stopPropagation } from 'svelte/legacy'
+
+	const bubble = createBubbler()
 	import { createEventDispatcher } from 'svelte'
 	import CloseX from '$lib/icons/close-x.svelte'
 	import { browser } from '$app/environment'
 
 	const dispatch = createEventDispatcher()
-	export let showModal:boolean = false
-	export let lgModal:boolean = false
-
-	$: {
-		if (showModal && browser) bodyStyles()
-		if (!showModal && browser) undoBodyStyles()
+	interface Props {
+		showModal?: boolean
+		lgModal?: boolean
+		children?: import('svelte').Snippet
 	}
 
-	function closeModal () {
+	let { showModal = $bindable(false), lgModal = $bindable(false), children }: Props = $props()
+
+	function closeModal(e: Event) {
+		if (e) e.preventDefault()
+
 		showModal = false
 		lgModal = false
 		dispatch('close')
 	}
 
-	function bodyStyles () {
+	function bodyStyles() {
 		const body = document.querySelector('body')
 		body?.classList.add('modal-open')
 	}
 
-	function undoBodyStyles () {
+	function undoBodyStyles() {
 		const body = document.querySelector('body')
 		body?.classList.remove('modal-open')
 	}
+	run(() => {
+		if (showModal && browser) bodyStyles()
+		if (!showModal && browser) undoBodyStyles()
+	})
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="Modal"
 	class:active={showModal}
-	class:lgModal={lgModal}
-	on:close={closeModal}
-	on:click|self={closeModal}
+	class:lgModal
+	onclose={closeModal}
+	onclick={self(closeModal)}
 	aria-roledescription="dialog"
-	aria-modal="true"
->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="modal_inner" class:active={showModal} on:click|stopPropagation>
-		<!-- svelte-ignore a11y-autofocus -->
-		<button class=close_btn autofocus on:click|preventDefault={closeModal}><CloseX /></button>
-		<slot />
+	aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal_inner" class:active={showModal} onclick={stopPropagation(bubble('click'))}>
+		<!-- svelte-ignore a11y_autofocus -->
+		<button class="close_btn" autofocus onclick={closeModal}><CloseX /></button>
+		{@render children?.()}
 	</div>
 </div>
 
-<style lang=postcss>
+<style lang="postcss">
 	@import '@styles/mediaQueries.pcss';
 
 	.Modal {
@@ -76,7 +84,7 @@
 		}
 
 		&::before {
-			content: "";
+			content: '';
 			position: absolute;
 			top: 0;
 			right: 0;
@@ -84,7 +92,7 @@
 			left: 0;
 			z-index: -1;
 			background-color: var(--color-slate-900);
-			opacity: .9;
+			opacity: 0.9;
 		}
 
 		.modal_inner {
@@ -122,7 +130,7 @@
 			padding: 0;
 			color: var(--color-slate-200);
 			cursor: pointer;
-			transition: color .3s ease-in-out;
+			transition: color 0.3s ease-in-out;
 
 			&:hover {
 				color: var(--color-red-200);

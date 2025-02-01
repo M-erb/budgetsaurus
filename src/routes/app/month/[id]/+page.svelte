@@ -11,12 +11,17 @@
 	import { invalidateAll } from '$app/navigation'
 	import axios from 'redaxios'
 
-	export let data: PageServerData
-	let showModal = false
-	let errorBag: errorBagType = {}
-	let curTab = $page.url.searchParams.get('tab') ?? 'report'
+	interface Props {
+		data: PageServerData
+	}
 
-	function tabNav (tabName:string) {
+	let { data }: Props = $props()
+	let showModal = $state(false)
+	let errorBag: errorBagType = {}
+	let curTab = $state($page.url.searchParams.get('tab') ?? 'report')
+
+	function tabNav(tabName: string) {
+		console.log('tabName: ', tabName)
 		$page.url.searchParams.set('tab', tabName)
 		const paramsString = $page.url.searchParams.toString()
 		curTab = tabName
@@ -27,14 +32,16 @@
 		if (!$page.url.searchParams.get('tab')) tabNav(curTab)
 	})
 
-	let monthName = ''
+	let monthName = $state('')
 
-	function editMonthName (name: string) {
+	function editMonthName(name: string) {
 		monthName = name
 		showModal = true
 	}
 
-	async function saveMonthName () {
+	async function saveMonthName(e: Event) {
+		e.preventDefault()
+
 		const payload = {
 			year: {
 				id: data.month.yearId
@@ -45,7 +52,7 @@
 			}
 		}
 
-		const {err} = await to(axios.put('/api/months', payload))
+		const { err } = await to(axios.put('/api/months', payload))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
 
@@ -66,38 +73,48 @@
 		<div class="container">
 			<div class="title_area">
 				<h1 class="">
-					<button class="btn_edit_month" title="Edit Month Name" on:click={() => editMonthName(data.month.name)}>
+					<button
+						class="btn_edit_month"
+						title="Edit Month Name"
+						onclick={() => editMonthName(data.month.name)}>
 						<span class="fancy_text">{data.month.name}</span>
 					</button>
-					<small>{data.month.year.name}</small></h1>
+					<small>{data.month.year.name}</small>
+				</h1>
 			</div>
 
 			<nav class="month_nav">
-				<button class="btn" on:click={() => tabNav('income')} class:__active={curTab === 'income'}>Income</button>
-				<button class="btn" on:click={() => tabNav('report')} class:__active={curTab === 'report'}>Report</button>
-				<button class="btn" on:click={() => tabNav('tran')} class:__active={curTab === 'tran'}>Transactions</button>
+				<button class="btn" onclick={() => tabNav('income')} class:__active={curTab === 'income'}
+					>Income</button>
+				<button class="btn" onclick={() => tabNav('report')} class:__active={curTab === 'report'}
+					>Report</button>
+				<button class="btn" onclick={() => tabNav('tran')} class:__active={curTab === 'tran'}
+					>Transactions</button>
 			</nav>
 		</div>
 	</section>
 
-	{#if curTab === 'income' }
+	{#if curTab === 'income'}
 		<MonthlyIncomes month={data.month} />
 	{/if}
 
-	{#if curTab === 'report' }
-		<MonthlyReportArea monthlyReport={data.monthlyReport} incomes={data.month.incomes} cats={data.cats} />
+	{#if curTab === 'report'}
+		<MonthlyReportArea
+			monthlyReport={data.monthlyReport}
+			incomes={data.month.incomes}
+			cats={data.cats} />
 	{/if}
 
-	{#if curTab === 'tran' }
+	{#if curTab === 'tran'}
 		<MonthlyTransactions month={data.month} cats={data.cats} shareGroups={data.shareGroups} />
 	{/if}
 </main>
 
 <Modal bind:showModal>
-	<form on:submit|preventDefault={saveMonthName}>
+	<form onsubmit={saveMonthName}>
 		<label class:is_error={errorBag.name}>
 			<span class="label">Edit Month</span>
-			<!-- svelte-ignore a11y-autofocus -->
+			<!-- svelte-ignore a11y_autofocus -->
 			<select bind:value={monthName} autofocus>
 				{#each monthsLongList as month}
 					<option>{month}</option>

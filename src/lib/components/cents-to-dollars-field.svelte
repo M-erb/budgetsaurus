@@ -1,14 +1,16 @@
 <script lang=ts>
+	import { run } from 'svelte/legacy'
+
 	import Dollar from '$lib/icons/dollar.svelte'
 	import { numFormat } from '$lib/lilUtils'
-	export let label = ''
-	export let value: number|string
-	let display: string = ''
-
-	$: {
-		value = typeof value === 'string' ? Number(value.replace(/\D/g,'')) : Number(value)
-		display = centsToDollars(value)
+	interface Props {
+		label?: string
+		value: number|string
 	}
+
+	let { label = '', value = $bindable() }: Props = $props();
+	let display: string = $state('')
+
 
 	function centsToDollars (num:number):string {
 		const dollars = num / 100
@@ -22,6 +24,10 @@
 		const target = e.target as HTMLInputElement
 		target.selectionStart = target.selectionEnd
 	}
+	run(() => {
+		value = typeof value === 'string' ? Number(value.replace(/\D/g,'')) : Number(value)
+		display = centsToDollars(value)
+	});
 </script>
 
 <label class="centsToDollars">
@@ -31,7 +37,7 @@
 
 	<div class="num_field">
 		<Dollar />
-		<input type="text" bind:value={value} on:select={controlSelect} />
+		<input type="text" bind:value={value} onselect={controlSelect} />
 		<div class="fake_input">
 			<span class="num_display">{display}</span>
 		</div>

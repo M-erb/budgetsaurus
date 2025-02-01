@@ -11,9 +11,13 @@
 		amount: number
 	}
 
-	export let value: budget|undefined
-	export let monthId: number
-	let active = false
+	interface Props {
+		value: budget|undefined;
+		monthId: number;
+	}
+
+	let { value = $bindable(), monthId }: Props = $props();
+	let active = $state(false)
 
 	onMount(() => {
 		if (value) active = true
@@ -41,7 +45,7 @@
 
 <div class="add_share">
 	<div class="btn_wrap">
-		<button class="btn" type="button" on:click={activate}>
+		<button class="btn" type="button" onclick={activate}>
 			{#if active}
 				<Minus />
 				{:else}

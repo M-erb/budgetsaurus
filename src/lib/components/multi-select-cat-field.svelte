@@ -1,25 +1,37 @@
-<script lang=ts>
+<script lang="ts">
+	import { run } from 'svelte/legacy'
+
 	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
+	import type { E } from 'vitest/dist/chunks/environment.LoooBwUu.js'
 
 	interface cat {
 		id: number
-		note: string|null
-		createdAt: Date|null
+		note: string | null
+		createdAt: Date | null
 		color: string
 		name: string
 	}
 
-	export let value: cat[] = []
-	export let cats: cat[]
+	interface Props {
+		value?: cat[]
+		cats: cat[]
+	}
 
-	let active = false
-	let searchTxt: string = ''
-	let filteredCats: cat[]
+	let { value = $bindable([]), cats }: Props = $props()
 
-	$: filteredCats = cats.filter(cat => cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase()))
+	let active = $state(false)
+	let searchTxt: string = $state('')
+	let filteredCats: cat[] = $state([])
 
-	function select (cat: cat) {
+	run(() => {
+		filteredCats = cats.filter(cat =>
+			cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase())
+		)
+	})
+
+	function select(cat: cat, e: Event) {
+		e.preventDefault()
 		const foundIndex = value.findIndex(item => cat.id === item.id)
 
 		if (foundIndex > -1) value.splice(foundIndex, 1)
@@ -32,27 +44,28 @@
 		filteredCats = structuredClone(cats)
 	})
 
-	function handleKey (e:KeyboardEvent) {
+	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') active = true
 	}
 </script>
 
-<div class="select_field_area" class:active on:blur={() => active = !active}>
+<div class="select_field_area" class:active onblur={() => (active = !active)}>
 	<span class="label">Category</span>
 
 	<button
 		class="select_field"
 		type="button"
-		on:click={() => active = !active}
-		on:keydown={handleKey}
-	>
+		onclick={() => (active = !active)}
+		onkeydown={handleKey}>
 		<div class="name_area">
 			{#if value.length}
 				{#if value.length === 1}
-					<div class="cat_color" style:background-color={ value[0].color }></div>
+					<div class="cat_color" style:background-color={value[0].color}></div>
 				{/if}
-				<span class="selected_value">{ value.length === 1 ? `${value[0].name}` : `${value.length} Selected` }</span>
-				{:else} <span class="selected_value">Select a Category</span>
+				<span class="selected_value"
+					>{value.length === 1 ? `${value[0].name}` : `${value.length} Selected`}</span>
+			{:else}
+				<span class="selected_value">Select a Category</span>
 			{/if}
 		</div>
 		<ChevronUp />
@@ -61,13 +74,17 @@
 	<ul class="dropdown_options">
 		<li class="search">
 			<label>
-				<input type="text" name="search_categories" bind:value={searchTxt} placeholder="search for categories">
+				<input
+					type="text"
+					name="search_categories"
+					bind:value={searchTxt}
+					placeholder="search for categories" />
 			</label>
 		</li>
-		{#each filteredCats as cat }
+		{#each filteredCats as cat}
 			{@const isSelected = value.some(item => cat.id === item.id)}
 			<li class="option">
-				<button type="button" on:click|preventDefault={() => select(cat)}>
+				<button type="button" onclick={e => select(cat, e)}>
 					<div class="check" class:active={isSelected}></div>
 					<div class="cat_color" style:background-color={cat.color}></div>
 					<span class="cat_name">{cat.name}</span>
@@ -91,7 +108,9 @@
 			font-weight: bold;
 			text-transform: uppercase;
 			margin-bottom: var(--size-1);
-			transition: color .3s ease-in-out, border-color .3s ease-in-out;
+			transition:
+				color 0.3s ease-in-out,
+				border-color 0.3s ease-in-out;
 		}
 
 		.select_field {
@@ -106,7 +125,9 @@
 			border-radius: var(--radius-md);
 			padding: var(--size-2);
 			cursor: pointer;
-			transition: color .3s ease-in-out, border-color .3s ease-in-out;
+			transition:
+				color 0.3s ease-in-out,
+				border-color 0.3s ease-in-out;
 
 			&:focus-visible {
 				outline: 3px solid var(--color-blue);
@@ -126,7 +147,7 @@
 
 			& :global(svg) {
 				transform: rotate(180deg);
-				transition: transform .3s ease-in-out;
+				transition: transform 0.3s ease-in-out;
 			}
 		}
 

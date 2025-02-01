@@ -7,12 +7,16 @@
 		name: string
 	}
 
-	export let value: number
-	export let cats: cat[]
+	interface Props {
+		value: number;
+		cats: cat[];
+	}
 
-	let selected: cat|undefined
+	let { value, cats }: Props = $props();
 
-	$: selected = value ? cats.find(item => item.id === value) : undefined
+	let selected: cat|undefined = $derived(value ? cats.find(item => item.id === value) : undefined)
+
+	
 </script>
 
 <div class="display_cat">
