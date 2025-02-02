@@ -119,7 +119,7 @@
 	}
 </script>
 
-<Modal bind:showModal on:close={() => (type = '')}>
+<Modal bind:showModal onClose={() => (type = '')}>
 	{#if type === 'addNew'}
 		<h2 class="h5">New Category</h2>
 

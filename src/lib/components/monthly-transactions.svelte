@@ -220,7 +220,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal bind:lgModal on:close={() => modalMode = null} >
+<Modal bind:showModal bind:lgModal onClose={() => (modalMode = null)}>
 	{#if modalMode === 'addMulti'}
 		<h2 class="h5">Multi Transaction</h2>
 

@@ -197,7 +197,7 @@
 	</div>
 </section>
 
-<Modal bind:showModal on:close={() => (modalMode = null)}>
+<Modal bind:showModal onClose={() => (modalMode = null)}>
 	{#if modalMode === 'addNew'}
 		<form onsubmit={saveNew}>
 			<label>

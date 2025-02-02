@@ -1,26 +1,29 @@
 <script lang="ts">
-	import { run, self, createBubbler, stopPropagation } from 'svelte/legacy'
-
-	const bubble = createBubbler()
-	import { createEventDispatcher } from 'svelte'
 	import CloseX from '$lib/icons/close-x.svelte'
 	import { browser } from '$app/environment'
 
-	const dispatch = createEventDispatcher()
 	interface Props {
 		showModal?: boolean
 		lgModal?: boolean
+		onClose?: () => void
 		children?: import('svelte').Snippet
 	}
 
-	let { showModal = $bindable(false), lgModal = $bindable(false), children }: Props = $props()
+	let {
+		showModal = $bindable(false),
+		lgModal = $bindable(false),
+		children,
+		onClose
+	}: Props = $props()
 
-	function closeModal(e: Event) {
-		if (e) e.preventDefault()
-
+	function closeModal() {
 		showModal = false
 		lgModal = false
-		dispatch('close')
+		if (onClose) onClose()
+	}
+
+	function clickOutside(e: Event) {
+		if (e.target === e.currentTarget) closeModal()
 	}
 
 	function bodyStyles() {
@@ -32,7 +35,8 @@
 		const body = document.querySelector('body')
 		body?.classList.remove('modal-open')
 	}
-	run(() => {
+
+	$effect(() => {
 		if (showModal && browser) bodyStyles()
 		if (!showModal && browser) undoBodyStyles()
 	})
@@ -44,12 +48,11 @@
 	class="Modal"
 	class:active={showModal}
 	class:lgModal
-	onclose={closeModal}
-	onclick={self(closeModal)}
+	onclick={clickOutside}
 	aria-roledescription="dialog"
 	aria-modal="true">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal_inner" class:active={showModal} onclick={stopPropagation(bubble('click'))}>
+	<div class="modal_inner" class:active={showModal}>
 		<!-- svelte-ignore a11y_autofocus -->
 		<button class="close_btn" autofocus onclick={closeModal}><CloseX /></button>
 		{@render children?.()}
