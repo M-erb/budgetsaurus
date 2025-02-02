@@ -1,3 +1,100 @@
+<script lang="ts" module>
+	interface props {
+		month: {
+			id: number
+			note: string | null
+			name: string
+			yearId: number
+			transactions: transaction[]
+			year: {
+				id: number
+				name: string
+				note: string | null
+			}
+		}
+		cats: cat[]
+		shareGroups: {
+			id: number
+			name: string
+			createdAt: Date | null
+			note: string | null
+		}[]
+	}
+
+	interface shareItem {
+		id: number
+		createdAt: Date | null
+		note: string | null
+		amount: number
+		shareGroupId: number
+		tranId: number
+		shareGroup: {
+			id: number
+			name: string
+			createdAt: Date | null
+			note: string | null
+		}
+	}
+
+	interface transaction {
+		id: number
+		note: string | null
+		date: Date | null
+		name: string
+		createdAt: Date | null
+		catId: number
+		monthId: number
+		amount: number
+		cat: {
+			id: number
+			name: string
+			createdAt: Date | null
+			note: string | null
+			color: string
+		}
+		shares: shareItem[]
+	}
+
+	interface cat {
+		id: number
+		note: string | null
+		createdAt: Date | null
+		color: string
+		name: string
+	}
+
+	interface newFieldsType {
+		monthId: number
+		name: string
+		amount: number
+		note: string | null
+		catId: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			amount: number
+			note: string | null
+		}
+	}
+
+	interface editFieldsType {
+		id: number
+		monthId: number
+		catId: number
+		name: string
+		note: string | null
+		amount: number
+		share?: {
+			tranId: number
+			shareGroupId: number
+			id: number
+			amount: number
+			note: string | null
+			createdAt: Date | null
+		}
+	}
+</script>
+
 <script lang="ts">
 	import { centsToDollars, fillErrorBag } from '$lib/lilUtils'
 	import { format as formatDate } from 'date-fns'
@@ -12,22 +109,20 @@
 	import MiltiSelectCatField from '$lib/components/multi-select-cat-field.svelte'
 	import AddShare from '$lib/components/add-share.svelte'
 	import DisplayCat from '$lib/components/display-cat-field.svelte'
-  import { untrack } from 'svelte';
+	import { untrack } from 'svelte'
 
-	const {
-		month,
-		cats,
-		shareGroups
-	} : props = $props()
+	const { month, cats, shareGroups }: props = $props()
 
 	let showModal = $state(false)
-	let modalMode: 'addNew'|'edit'|'addMulti'|null = $state(null)
+	let modalMode: 'addNew' | 'edit' | 'addMulti' | null = $state(null)
 	let lgModal: boolean = $state(false)
 	let errorBag: errorBagType = $state({})
 
 	let newSelectedCats: cat[] = $state([])
 	let multiNewFields: newFieldsType[] = $state([])
-	let totalMultiFields: number = $derived.by(() => ( multiNewFields.reduce((accum, item) => (item.amount + accum), 0) ))
+	let totalMultiFields: number = $derived.by(() =>
+		multiNewFields.reduce((accum, item) => item.amount + accum, 0)
+	)
 	const addNewFields: newFieldsType = $state({
 		monthId: month.id,
 		catId: 0,
@@ -53,13 +148,16 @@
 		for (let i = 0; i < newSelectedCats.length; i++) {
 			const selectedCat = newSelectedCats[i]
 			const match = untrack(() => multiNewFields.find(item => item.catId === selectedCat.id))
-			if (match === undefined) untrack(() => multiNewFields.push({
-				monthId: month.id,
-				catId: selectedCat.id,
-				name: addNewFields.name,
-				amount: 0,
-				note: ''
-			}))
+			if (match === undefined)
+				untrack(() =>
+					multiNewFields.push({
+						monthId: month.id,
+						catId: selectedCat.id,
+						name: addNewFields.name,
+						amount: 0,
+						note: ''
+					})
+				)
 		}
 	})
 
@@ -72,7 +170,7 @@
 		amount: 0
 	})
 
-	function startAddNew () {
+	function startAddNew() {
 		errorBag = {}
 		delete addNewFields.share
 		addNewFields.monthId = month.id
@@ -85,7 +183,7 @@
 		modalMode = 'addNew'
 	}
 
-	function startAddMulti () {
+	function startAddMulti() {
 		newSelectedCats = []
 		multiNewFields = []
 		errorBag = {}
@@ -101,10 +199,10 @@
 		modalMode = 'addMulti'
 	}
 
-	async function saveNew (e: Event) {
+	async function saveNew(e: Event) {
 		e.preventDefault()
 
-		const { err }: { err: any, res: any} = await to(axios.post('/api/transactions', addNewFields))
+		const { err }: { err: any; res: any } = await to(axios.post('/api/transactions', addNewFields))
 		if (err) {
 			console.error('err: ', err)
 
@@ -117,11 +215,9 @@
 		await invalidateAll()
 	}
 
-	async function saveMulti (e: Event) {
+	async function saveMulti(e: Event) {}
 
-	}
-
-	function startEditEntry (entry:transaction) {
+	function startEditEntry(entry: transaction) {
 		errorBag = {}
 		delete editFields.share
 		editFields.id = entry.id
@@ -147,17 +243,17 @@
 		showModal = true
 	}
 
-	async function saveEdit (e: Event) {
+	async function saveEdit(e: Event) {
 		e.preventDefault()
 
-		const {err} = await to(axios.put('/api/transactions', editFields))
+		const { err } = await to(axios.put('/api/transactions', editFields))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
 
 		await invalidateAll()
 	}
 
-	function combineShares (amount:number, shares:shareItem[]) {
+	function combineShares(amount: number, shares: shareItem[]) {
 		const sharesAmount = shares.reduce((accum, cur) => (accum += cur.amount), 0)
 		return amount - sharesAmount
 	}
@@ -168,12 +264,13 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Transactions</h2>
 			<div class="btn_wrap">
-				<button class="btn_round" onclick={startAddNew} title="Add new transaction"><Plus /></button>
-				<button class="btn_round" onclick={startAddMulti} title="Add multible new transactions"><Plus /> <Plus /></button>
+				<button class="btn_round" onclick={startAddNew} title="Add new transaction"
+					><Plus /></button>
+				<button class="btn_round" onclick={startAddMulti} title="Add multible new transactions"
+					><Plus /> <Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
-
 			<div class="ft_row __header">
 				<div class="ft_col tran_color"></div>
 				<div class="ft_col tran_cat">
@@ -240,36 +337,38 @@
 					<label class:is_error={errorBag.name}>
 						<span class="label">Name</span>
 						<!-- svelte-ignore a11y_autofocus -->
-						<input type="text" bind:value={addNewFields.name} autofocus>
+						<input type="text" bind:value={addNewFields.name} autofocus />
 						{#if errorBag.name}
 							<div class="error_space">
 								<p>{errorBag.name}</p>
 							</div>
 						{/if}
 					</label>
-					<CentsToDollarsField
-						label="Total Amount"
-						bind:value={addNewFields.amount}
-					/>
-					<MiltiSelectCatField value={newSelectedCats} cats={cats} />
+					<CentsToDollarsField label="Total Amount" bind:value={addNewFields.amount} />
+					<MiltiSelectCatField value={newSelectedCats} {cats} />
 				</div>
 				<div class="multi_list">
 					{#each multiNewFields as tranItem}
 						<div class="item_area">
 							<!-- <p class="display">{ tranItem.name }</p> -->
-							<DisplayCat value={tranItem.catId} cats={cats} />
-							<CentsToDollarsField
-								label=Amount
-								bind:value={tranItem.amount}
-							/>
-							<AddShare bind:value={tranItem.share} amount={tranItem.amount} tranId={0} shareGroups={shareGroups} />
+							<DisplayCat value={tranItem.catId} {cats} />
+							<CentsToDollarsField label="Amount" bind:value={tranItem.amount} />
+							<AddShare
+								bind:value={tranItem.share}
+								amount={tranItem.amount}
+								tranId={0}
+								{shareGroups} />
 						</div>
 					{/each}
 				</div>
 			</div>
 
 			<div class="total_remain">
-				<p class="label" class:good={totalMultiRemaining === 0}>Total Remaining: {`${totalMultiRemaining > 0 ? '+' : ''}`}{centsToDollars(totalMultiRemaining)}</p>
+				<p class="label" class:good={totalMultiRemaining === 0}>
+					Total Remaining: {`${totalMultiRemaining > 0 ? '+' : ''}`}{centsToDollars(
+						totalMultiRemaining
+					)}
+				</p>
 			</div>
 			<div class="btn_wrap __left">
 				<button class="btn" type="submit">Submit</button>
@@ -294,20 +393,21 @@
 			<label class:is_error={errorBag.name}>
 				<span class="label">Name</span>
 				<!-- svelte-ignore a11y_autofocus -->
-				<input type="text" bind:value={addNewFields.name} autofocus>
+				<input type="text" bind:value={addNewFields.name} autofocus />
 				{#if errorBag.name}
 					<div class="error_space">
 						<p>{errorBag.name}</p>
 					</div>
 				{/if}
 			</label>
-			<CentsToDollarsField
-				label=Amount
-				bind:value={addNewFields.amount}
-			/>
+			<CentsToDollarsField label="Amount" bind:value={addNewFields.amount} />
 			<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
-			<MiltiSelectCatField value={newSelectedCats} cats={cats} />
-			<AddShare bind:value={addNewFields.share} amount={addNewFields.amount} tranId={0} shareGroups={shareGroups} />
+			<MiltiSelectCatField value={newSelectedCats} {cats} />
+			<AddShare
+				bind:value={addNewFields.share}
+				amount={addNewFields.amount}
+				tranId={0}
+				{shareGroups} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={addNewFields.note}></textarea>
@@ -326,14 +426,15 @@
 			<label>
 				<span class="label">Name</span>
 				<!-- svelte-ignore a11y_autofocus -->
-				<input type="text" bind:value={editFields.name} autofocus>
+				<input type="text" bind:value={editFields.name} autofocus />
 			</label>
-			<CentsToDollarsField
-				label=Amount
-				bind:value={editFields.amount}
-			/>
-			<SelectCatField bind:value={editFields.catId} cats={cats} />
-			<AddShare bind:value={editFields.share} amount={editFields.amount} tranId={editFields.id} shareGroups={shareGroups} />
+			<CentsToDollarsField label="Amount" bind:value={editFields.amount} />
+			<SelectCatField bind:value={editFields.catId} {cats} />
+			<AddShare
+				bind:value={editFields.share}
+				amount={editFields.amount}
+				tranId={editFields.id}
+				{shareGroups} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={editFields.note}></textarea>
@@ -376,16 +477,16 @@
 	}
 
 	.total_remain {
-			margin-bottom: var(--size-4);
+		margin-bottom: var(--size-4);
 
-			.label {
-				color: var(--color-red);
+		.label {
+			color: var(--color-red);
 
-				&.good {
-					color: var(--color-green);
-				}
+			&.good {
+				color: var(--color-green);
 			}
 		}
+	}
 
 	form {
 		@media (--md) {
@@ -441,100 +542,3 @@
 		}
 	}
 </style>
-
-<script lang=ts module>
-	interface props {
-		month: {
-			id: number
-			note: string|null
-			name: string
-			yearId: number
-			transactions: transaction[]
-			year: {
-				id: number
-				name: string
-				note: string|null
-			}
-		},
-		cats: cat[],
-		shareGroups: {
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-		}[]
-	}
-
-	interface shareItem {
-		id: number
-		createdAt: Date|null
-		note: string|null
-		amount: number
-		shareGroupId: number
-		tranId: number
-		shareGroup: {
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-		}
-	}
-
-	interface transaction {
-		id: number
-		note: string|null
-		date: Date|null
-		name: string
-		createdAt: Date|null
-		catId: number
-		monthId: number
-		amount: number
-		cat: {
-			id: number
-			name: string
-			createdAt: Date|null
-			note: string|null
-			color: string
-		}
-		shares: shareItem[]
-	}
-
-	interface cat {
-		id: number
-		note: string|null
-		createdAt: Date|null
-		color: string
-		name: string
-	}
-
-	interface newFieldsType {
-		monthId: number
-		name: string
-		amount: number
-		note: string|null
-		catId: number
-		share?: {
-			tranId: number
-			shareGroupId: number
-			amount: number
-			note: string|null
-		}
-	}
-
-	interface editFieldsType {
-		id: number
-		monthId: number
-		catId: number
-		name: string
-		note: string|null
-		amount: number
-		share?: {
-			tranId: number
-			shareGroupId: number
-			id: number
-			amount: number
-			note: string|null
-			createdAt: Date|null
-		}
-	}
-</script>
