@@ -243,8 +243,8 @@
 		showModal = true
 	}
 
-	async function saveEdit(e: Event) {
-		e.preventDefault()
+	async function saveEdit(e?: Event) {
+		if (e) e.preventDefault()
 
 		const { err } = await to(axios.put('/api/transactions', editFields))
 		if (err) console.error('err: ', err)
