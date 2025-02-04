@@ -3,6 +3,7 @@
 
 	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
+	import type { E } from 'vitest/dist/chunks/environment.LoooBwUu.js'
 
 	interface cat {
 		id: number
@@ -13,14 +14,13 @@
 	}
 
 	interface Props {
-		value: number
+		value?: cat[]
 		cats: cat[]
 	}
 
-	let { value = $bindable(), cats }: Props = $props()
+	let { value = $bindable([]), cats }: Props = $props()
 
 	let active = $state(false)
-	let selected: cat | undefined = $derived(value ? cats.find(item => item.id === value) : undefined)
 	let searchTxt: string = $state('')
 	let filteredCats: cat[] = $state([])
 
@@ -32,8 +32,12 @@
 
 	function select(cat: cat, e: Event) {
 		e.preventDefault()
-		value = cat.id
-		active = false
+		const foundIndex = value.findIndex(item => cat.id === item.id)
+
+		if (foundIndex > -1) value.splice(foundIndex, 1)
+		else value.push(cat)
+
+		value = value
 	}
 
 	onMount(() => {
@@ -54,10 +58,15 @@
 		onclick={() => (active = !active)}
 		onkeydown={handleKey}>
 		<div class="name_area">
-			{#if selected}
-				<div class="cat_color" style:background-color={selected.color}></div>
+			{#if value.length}
+				{#if value.length === 1}
+					<div class="cat_color" style:background-color={value[0].color}></div>
+				{/if}
+				<span class="selected_value"
+					>{value.length === 1 ? `${value[0].name}` : `${value.length} Selected`}</span>
+			{:else}
+				<span class="selected_value">Select a Category</span>
 			{/if}
-			<span class="selected_value">{selected ? selected.name : 'Select a Category'}</span>
 		</div>
 		<ChevronUp />
 	</button>
@@ -73,8 +82,10 @@
 			</label>
 		</li>
 		{#each filteredCats as cat}
+			{@const isSelected = value.some(item => cat.id === item.id)}
 			<li class="option">
 				<button type="button" onclick={e => select(cat, e)}>
+					<div class="check" class:active={isSelected}></div>
 					<div class="cat_color" style:background-color={cat.color}></div>
 					<span class="cat_name">{cat.name}</span>
 				</button>
@@ -170,12 +181,36 @@
 				&:hover {
 					background-color: var(--color-slate-500);
 				}
+
+				.check {
+					background-color: #f9fafb29;
+					border: 2px solid var(--color-slate-300);
+					border-radius: var(--radius-sm);
+					width: 24px;
+					height: 24px;
+					position: relative;
+
+					&::after {
+						content: '';
+						display: none;
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						background-color: var(--color-slate-400);
+						border-radius: var(--radius-sm);
+						width: 12px;
+						height: 12px;
+					}
+
+					&.active::after {
+						display: block;
+					}
+				}
 			}
 		}
 
 		&.active {
-			z-index: 10;
-
 			.select_field {
 				outline: 3px solid var(--color-blue);
 

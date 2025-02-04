@@ -3,7 +3,12 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 
 	const options = {}
-	export let data: LayoutData
+	interface Props {
+		data: LayoutData
+		children?: import('svelte').Snippet
+	}
+
+	let { data, children }: Props = $props()
 </script>
 
 <div class="top_area">
@@ -14,7 +19,7 @@
 	</div>
 </div>
 
-<slot />
+{@render children?.()}
 
 <SvelteToast {options} />
 

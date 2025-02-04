@@ -12,12 +12,12 @@ const url = ENV === 'development' ? TURSO_URL : TURSO_URL_PROD
 const authToken = ENV === 'development' ? TURSO_AUTH : TURSO_AUTH_PROD
 
 export default defineConfig({
-  schema: './src/lib/server/schema.ts',
-  out: './drizzle/migrations',
-  dialect: 'sqlite', // 'postgresql' | 'mysql' | 'sqlite'
-  driver: authToken ? 'turso' : undefined,
-  dbCredentials: {
-    url,
-    authToken
-  }
+	schema: './src/lib/server/schema.ts',
+	out: './drizzle/migrations',
+	dialect: 'sqlite', // 'postgresql' | 'mysql' | 'sqlite'
+	driver: authToken ? 'turso' : undefined,
+	dbCredentials: {
+		url,
+		authToken
+	}
 })

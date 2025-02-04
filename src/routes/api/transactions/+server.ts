@@ -36,34 +36,34 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const newEntry: entryType = await db
 		.insert(transactions)
 		.values(transactionData)
-		.returning().get()
+		.returning()
+		.get()
 
 	if (!shareData) return json(newEntry)
 
 	shareData.tranId = newEntry.id
-	const newShare = await db
-		.insert(shareTransactions)
-		.values(shareData)
-		.returning().get()
+	const newShare = await db.insert(shareTransactions).values(shareData).returning().get()
 
 	newEntry.share = newShare
 
 	return json(newEntry)
 }
 
-async function verifyPost (data:unknown) {
+async function verifyPost(data: unknown) {
 	const validation = z.object({
 		monthId: z.number(),
 		catId: z.number().min(1, 'Category is required'),
 		name: z.string().min(1, '"Name" is a required field'),
 		note: z.string(),
 		amount: z.number().int().nonnegative(),
-		share: z.object({
-			shareGroupId: z.number(),
-			tranId: z.number(),
-			amount: z.number().int().nonnegative(),
-			note: z.string()
-		}).optional()
+		share: z
+			.object({
+				shareGroupId: z.number(),
+				tranId: z.number(),
+				amount: z.number().int().nonnegative(),
+				note: z.string()
+			})
+			.optional()
 	})
 
 	const result = validation.parse(data)
@@ -78,7 +78,7 @@ interface entryType {
 	amount: number
 	date: Date | null
 	id: number
-	createdAt: Date | null,
+	createdAt: Date | null
 	share?: {
 		note: string | null
 		amount: number
@@ -118,28 +118,26 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		.update(transactions)
 		.set(transactionData)
 		.where(eq(transactions.id, cleanData.id))
-		.returning().get()
+		.returning()
+		.get()
 
 	if (!shareData) return json(updateEntry)
 
-	const updateShare = shareData.id ?
-		await db
-			.update(shareTransactions)
-			.set(shareData)
-			.where(eq(shareTransactions.id, shareData.id))
-			.returning().get()
-		:
-		await db
-			.insert(shareTransactions)
-			.values(shareData)
-			.returning().get()
+	const updateShare = shareData.id
+		? await db
+				.update(shareTransactions)
+				.set(shareData)
+				.where(eq(shareTransactions.id, shareData.id))
+				.returning()
+				.get()
+		: await db.insert(shareTransactions).values(shareData).returning().get()
 
 	updateEntry.share = updateShare
 
 	return json(updateEntry)
 }
 
-async function verifyPut (data:unknown) {
+async function verifyPut(data: unknown) {
 	const validation = z.object({
 		id: z.number(),
 		monthId: z.number(),
@@ -147,13 +145,15 @@ async function verifyPut (data:unknown) {
 		name: z.string(),
 		note: z.string(),
 		amount: z.number().int().nonnegative(),
-		share: z.object({
-			id: z.number().optional(),
-			shareGroupId: z.number(),
-			tranId: z.number(),
-			amount: z.number().int().nonnegative(),
-			note: z.string()
-		}).optional()
+		share: z
+			.object({
+				id: z.number().optional(),
+				shareGroupId: z.number(),
+				tranId: z.number(),
+				amount: z.number().int().nonnegative(),
+				note: z.string()
+			})
+			.optional()
 	})
 
 	const result = validation.parse(data)

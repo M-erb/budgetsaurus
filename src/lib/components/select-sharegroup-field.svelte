@@ -1,23 +1,28 @@
-<script lang=ts>
+<script lang="ts">
 	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
 
 	interface shareGroup {
 		id: number
 		name: string
-		createdAt: Date|null
-		note: string|null
+		createdAt: Date | null
+		note: string | null
 	}
 
-	export let value: number|undefined
-	export let shareGroups: shareGroup[]
+	interface Props {
+		value: number | undefined
+		shareGroups: shareGroup[]
+	}
 
-	let active = false
-	let selected: shareGroup|undefined
+	let { value = $bindable(), shareGroups }: Props = $props()
 
-	$: selected = value ? shareGroups.find(item => item.id === value) : undefined
+	let active = $state(false)
+	let selected: shareGroup | undefined = $derived(
+		value ? shareGroups.find(item => item.id === value) : undefined
+	)
 
-	function select (shareGroup: shareGroup) {
+	function select(shareGroup: shareGroup, e?: Event) {
+		if (e) e.preventDefault
 		value = shareGroup.id
 		active = false
 	}
@@ -30,17 +35,17 @@
 <div class="select_field_area" class:active>
 	<span class="label">Select Share Group</span>
 
-	<button class="select_field" type="button" on:click={() => active = !active}>
+	<button class="select_field" type="button" onclick={() => (active = !active)}>
 		<div class="name_area">
-			<span class="selected_value">{ selected ? selected.name : 'Select a Group' }</span>
+			<span class="selected_value">{selected ? selected.name : 'Select a Group'}</span>
 		</div>
 		<ChevronUp />
 	</button>
 
 	<ul class="dropdown_options">
-		{#each shareGroups as shareGroup }
+		{#each shareGroups as shareGroup}
 			<li class="option" title={shareGroup.note}>
-				<button type="button" on:click|preventDefault={() => select(shareGroup)}>
+				<button type="button" onclick={e => select(shareGroup, e)}>
 					<span class="cat_name">{shareGroup.name}</span>
 				</button>
 			</li>
@@ -63,7 +68,9 @@
 			font-weight: bold;
 			text-transform: uppercase;
 			margin-bottom: var(--size-1);
-			transition: color .3s ease-in-out, border-color .3s ease-in-out;
+			transition:
+				color 0.3s ease-in-out,
+				border-color 0.3s ease-in-out;
 		}
 
 		.select_field {
@@ -78,7 +85,9 @@
 			border-radius: var(--radius-md);
 			padding: var(--size-2);
 			cursor: pointer;
-			transition: color .3s ease-in-out, border-color .3s ease-in-out;
+			transition:
+				color 0.3s ease-in-out,
+				border-color 0.3s ease-in-out;
 
 			&:focus-visible {
 				outline: 3px solid var(--color-blue);
@@ -98,7 +107,7 @@
 
 			& :global(svg) {
 				transform: rotate(180deg);
-				transition: transform .3s ease-in-out;
+				transition: transform 0.3s ease-in-out;
 			}
 		}
 

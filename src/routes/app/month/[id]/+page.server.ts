@@ -17,28 +17,30 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		redirect(302, '/login')
 	}
 
-	const { res: month, err: errMonth } = await to(db.query.months.findFirst({
-		where: ((months, { eq }) => eq(months.id, Number(params.id))),
-		with: {
-			year: true,
-			transactions: {
-				with: {
-					cat: true,
-					shares: {
-						with: {
-							shareGroup: true
+	const { res: month, err: errMonth } = await to(
+		db.query.months.findFirst({
+			where: (months, { eq }) => eq(months.id, Number(params.id)),
+			with: {
+				year: true,
+				transactions: {
+					with: {
+						cat: true,
+						shares: {
+							with: {
+								shareGroup: true
+							}
 						}
-					}
+					},
+					orderBy: (transactions, { desc }) => [desc(transactions.date)]
 				},
-				orderBy: (transactions, { desc }) => [desc(transactions.date)]
-			},
-			incomes: {
-				with: {
-					month: true
+				incomes: {
+					with: {
+						month: true
+					}
 				}
 			}
-		}
-	}))
+		})
+	)
 
 	if (!month) error(404, { message: 'Not Found' })
 	if (errMonth) {
@@ -51,7 +53,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 	const cats = await db.query.cats.findMany({
 		with: {
 			budgets: {
-				where: ((cats, { eq }) => eq(cats.monthId, month.id))
+				where: (cats, { eq }) => eq(cats.monthId, month.id)
 			}
 		}
 	})

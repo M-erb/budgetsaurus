@@ -11,25 +11,25 @@
 
 	interface shareItem {
 		id: number
-		createdAt: Date|null
-		note: string|null
+		createdAt: Date | null
+		note: string | null
 		amount: number
 		shareGroupId: number
 		tranId: number
 		shareGroup: {
 			id: number
 			name: string
-			createdAt: Date|null
-			note: string|null
+			createdAt: Date | null
+			note: string | null
 		}
 	}
 
 	interface income {
-		date: Date|null
+		date: Date | null
 		id: number
 		name: string
-		createdAt: Date|null
-		note: string|null
+		createdAt: Date | null
+		note: string | null
 		monthId: number
 		amount: number
 		planned: number
@@ -37,70 +37,74 @@
 			id: number
 			yearId: number
 			name: string
-			note: string|null
+			note: string | null
 		}
 	}
 
-	export let month: {
-		id: number
-		note: string|null
-		name: string
-		yearId: number
-		transactions: {
+	interface Props {
+		month: {
 			id: number
-			note: string|null
-			date: Date|null
+			note: string | null
 			name: string
-			createdAt: Date|null
-			catId: number
-			monthId: number
-			amount: number
-			cat: {
+			yearId: number
+			transactions: {
+				id: number
+				note: string | null
+				date: Date | null
+				name: string
+				createdAt: Date | null
+				catId: number
+				monthId: number
+				amount: number
+				cat: {
+					id: number
+					name: string
+					createdAt: Date | null
+					note: string | null
+					color: string
+				}
+				shares: shareItem[]
+			}[]
+			incomes: income[]
+			year: {
 				id: number
 				name: string
-				createdAt: Date|null
-				note: string|null
-				color: string
+				note: string | null
 			}
-			shares: shareItem[]
-		}[]
-		incomes: income[]
-		year: {
-			id: number
-			name: string
-			note: string|null
 		}
 	}
 
-	let showModal = false
-	let modalMode: 'addNew'|'edit'|null = null
-	const addNewFields = {
+	let { month }: Props = $props()
+
+	let showModal = $state(false)
+	let modalMode: 'addNew' | 'edit' | null = $state(null)
+	const addNewFields = $state({
 		monthId: month.id,
 		name: '',
 		note: '',
 		planned: 0,
 		amount: 0
-	}
+	})
 
 	interface editFieldsType {
 		id: number
 		monthId: number
 		name: string
-		note: string|null
+		note: string | null
 		planned: number
 		amount: number
 	}
 
-	const editFields: editFieldsType = {
+	const editFields: editFieldsType = $state({
 		id: 0,
 		monthId: 0,
 		name: '',
 		note: '',
 		planned: 0,
 		amount: 0
-	}
+	})
 
-	function startAddNew () {
+	function startAddNew() {
 		addNewFields.name = ''
 		addNewFields.planned = 0
 		addNewFields.amount = 0
@@ -110,7 +114,7 @@
 		modalMode = 'addNew'
 	}
 
-	function startEditEntry (entry:income) {
+	function startEditEntry(entry: income) {
 		editFields.id = entry.id
 		editFields.monthId = entry.monthId
 		editFields.name = entry.name
@@ -122,16 +126,18 @@
 		showModal = true
 	}
 
-	async function saveNew () {
-		const {err} = await to(axios.post('/api/incomes', addNewFields))
+	async function saveNew(e: Event) {
+		e.preventDefault()
+		const { err } = await to(axios.post('/api/incomes', addNewFields))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
 
 		await invalidateAll()
 	}
 
-	async function saveEdit () {
-		const {err} = await to(axios.put('/api/incomes', editFields))
+	async function saveEdit(e: Event) {
+		e.preventDefault()
+		const { err } = await to(axios.put('/api/incomes', editFields))
 		if (err) console.error('err: ', err)
 		if (!err) showModal = false
 
@@ -144,11 +150,10 @@
 		<div class="sub_head">
 			<h2 class="h4 sec_title">Income</h2>
 			<div class="btn_wrap">
-				<button class="btn_round" on:click={startAddNew}><Plus /></button>
+				<button class="btn_round" onclick={startAddNew}><Plus /></button>
 			</div>
 		</div>
 		<div class="flex_table tran_list">
-
 			<div class="ft_row __header">
 				<div class="ft_col __name"></div>
 				<div class="ft_col __amount">
@@ -163,7 +168,7 @@
 			{#each month.incomes as item}
 				{@const difference = item.amount - item.planned}
 				{@const isDiffNeg = isNegative(difference)}
-				<button class="ft_row" on:click={() => startEditEntry(item)} title="Edit Income">
+				<button class="ft_row" onclick={() => startEditEntry(item)} title="Edit Income">
 					<div class="ft_col __name">
 						<span>{item.name}</span>
 					</div>
@@ -187,27 +192,21 @@
 		</div>
 
 		<div class="btn_wrap __left __t_space">
-			<button class="btn" on:click={startAddNew}><Plus /><span>Transaction</span></button>
+			<button class="btn" onclick={startAddNew}><Plus /><span>Transaction</span></button>
 		</div>
 	</div>
 </section>
 
-<Modal bind:showModal on:close={() => modalMode = null}>
+<Modal bind:showModal onClose={() => (modalMode = null)}>
 	{#if modalMode === 'addNew'}
-		<form on:submit|preventDefault={saveNew}>
+		<form onsubmit={saveNew}>
 			<label>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
-				<input type="text" bind:value={addNewFields.name} autofocus>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" bind:value={addNewFields.name} autofocus />
 			</label>
-			<CentsToDollarsField
-				label=Planned
-				bind:value={addNewFields.planned}
-			/>
-			<CentsToDollarsField
-				label=Actual
-				bind:value={addNewFields.amount}
-			/>
+			<CentsToDollarsField label="Planned" bind:value={addNewFields.planned} />
+			<CentsToDollarsField label="Actual" bind:value={addNewFields.amount} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={addNewFields.note}></textarea>
@@ -219,20 +218,14 @@
 	{/if}
 
 	{#if modalMode === 'edit'}
-		<form on:submit|preventDefault={saveEdit}>
+		<form onsubmit={saveEdit}>
 			<label>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
-				<input type="text" bind:value={editFields.name} autofocus>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" bind:value={editFields.name} autofocus />
 			</label>
-			<CentsToDollarsField
-				label=Planned
-				bind:value={editFields.planned}
-			/>
-			<CentsToDollarsField
-				label=Actual
-				bind:value={editFields.amount}
-			/>
+			<CentsToDollarsField label="Planned" bind:value={editFields.planned} />
+			<CentsToDollarsField label="Actual" bind:value={editFields.amount} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={editFields.note}></textarea>

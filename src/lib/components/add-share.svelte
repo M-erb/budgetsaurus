@@ -1,4 +1,4 @@
-<script lang=ts>
+<script lang="ts">
 	import { onMount } from 'svelte'
 	import SelectSharegroupField from '$lib/components/select-sharegroup-field.svelte'
 	import Plus from '$lib/icons/plus.svelte'
@@ -8,32 +8,38 @@
 	interface shareGroup {
 		id: number
 		name: string
-		createdAt: Date|null
-		note: string|null
+		createdAt: Date | null
+		note: string | null
 	}
 
 	interface share {
 		shareGroupId: number
 		tranId: number
 		amount: number
-		note: string|null
+		note: string | null
 	}
 
-	export let value: share|undefined
-	export let amount: number
-	export let tranId: number
-	export let shareGroups: shareGroup[]
-	let active = false
+	interface Props {
+		value: share | undefined
+		amount: number
+		tranId: number
+		shareGroups: shareGroup[]
+	}
+
+	let { value = $bindable(), amount, tranId, shareGroups }: Props = $props()
+	let active = $state(false)
 
 	// ensure that share amount is never above the transaction amount
-	$: if (value && value.amount > amount) value.amount = amount
+	$effect(() => {
+		if (value && value.amount > amount) value.amount = amount
+	})
 
 	onMount(() => {
 		if (value) active = true
 		else active = false
 	})
 
-	function activate () {
+	function activate() {
 		if (active) {
 			active = false
 			value = undefined
@@ -52,28 +58,35 @@
 		active = true
 	}
 
-	const useHalf = () => { if (value) value.amount = Math.floor(amount / 2) }
-	const useFull = () => { if (value) value.amount = amount }
+	const useHalf = (e: Event) => {
+		e.preventDefault()
+		if (value) value.amount = Math.floor(amount / 2)
+	}
+
+	const useFull = (e: Event) => {
+		e.preventDefault()
+		if (value) value.amount = amount
+	}
 </script>
 
 <div class="add_share">
 	<div class="btn_wrap">
-		<button class="btn" type="button" on:click={activate}>
+		<button class="btn __alt __sm" type="button" onclick={activate}>
 			{#if active}
 				<Minus />
-				{:else}
+			{:else}
 				<Plus />
 			{/if}
-			<span>{active ? 'Remove Share' : 'Add Share'}</span>
+			<span>Share</span>
 		</button>
 	</div>
 
 	{#if active && value}
-		<SelectSharegroupField bind:value={value.shareGroupId} shareGroups={shareGroups} />
+		<SelectSharegroupField bind:value={value.shareGroupId} {shareGroups} />
 		<CentsToDollarsField label="Amount to share" bind:value={value.amount} />
 		<div class="btn_wrap">
-			<button class="btn __sm" type="button" on:click|preventDefault={useHalf}>half</button>
-			<button class="btn __sm" type="button" on:click|preventDefault={useFull}>Full</button>
+			<button class="btn __alt __sm" type="button" onclick={useHalf}>half</button>
+			<button class="btn __alt __sm" type="button" onclick={useFull}>Full</button>
 		</div>
 	{/if}
 </div>
@@ -85,8 +98,10 @@
 		margin-bottom: var(--size-4);
 	}
 
-	.add_share {
-		position: relative;
-		z-index: 1;
+	.btn {
+		& :global(svg) {
+			width: 16px;
+			height: 16px;
+		}
 	}
 </style>

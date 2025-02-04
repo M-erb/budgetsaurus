@@ -1,9 +1,9 @@
-<script lang=ts>
+<script lang="ts">
 	import { onMount } from 'svelte'
 	import Plus from '$lib/icons/plus.svelte'
 	import Minus from '$lib/icons/minus.svelte'
 	import CentsToDollarsField from '$lib/components/cents-to-dollars-field.svelte'
-    import { number } from 'zod';
+	import { number } from 'zod'
 
 	interface budget {
 		catId: number
@@ -11,16 +11,20 @@
 		amount: number
 	}
 
-	export let value: budget|undefined
-	export let monthId: number
-	let active = false
+	interface Props {
+		value: budget | undefined
+		monthId: number
+	}
+
+	let { value = $bindable(), monthId }: Props = $props()
+	let active = $state(false)
 
 	onMount(() => {
 		if (value) active = true
 		else active = false
 	})
 
-	function activate () {
+	function activate() {
 		if (active) {
 			active = false
 			value = undefined
@@ -41,10 +45,10 @@
 
 <div class="add_share">
 	<div class="btn_wrap">
-		<button class="btn" type="button" on:click={activate}>
+		<button class="btn" type="button" onclick={activate}>
 			{#if active}
 				<Minus />
-				{:else}
+			{:else}
 				<Plus />
 			{/if}
 			<span>{active ? 'Remove Budget' : 'Add Budget'}</span>

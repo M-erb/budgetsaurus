@@ -1,42 +1,78 @@
-<script lang=ts>
-	import type { monthlyReportType, cat } from '$lib/components/monthly-report.svelte'
+<script lang="ts" module>
+	interface editFieldsType {
+		id: number
+		name: string
+		note: string | null
+		color: string | null
+		budget?: {
+			id: number
+			monthId: number
+			catId: number
+			amount: number
+		}
+	}
+
+	interface newFieldsType {
+		name: string
+		note: string | null
+		color: string | null
+		budget?: {
+			monthId: number
+			catId: number
+			amount: number
+		}
+	}
+</script>
+
+<script lang="ts">
+	import type { cat } from '$lib/components/monthly-report.svelte'
 	import Modal from './modal.svelte'
 	import axios from 'redaxios'
 	import { invalidateAll } from '$app/navigation'
 	import { to } from '$lib/lilUtils'
 	import AddBudget from '$lib/components/add-budget.svelte'
 
-	let showModal = false
-	let modalMode: 'addNew'|'edit'|null = null
-	export let cats: cat[]
-	export let monthId: number
-	const addNewFields: newFieldsType = {
+	interface Props {
+		type: 'addNew' | 'edit' | ''
+		cats: cat[]
+		monthId: number
+		editCatId: number
+	}
+
+	let { type = $bindable(), cats, monthId, editCatId }: Props = $props()
+	let showModal = $state(false)
+	const addNewFields: newFieldsType = $state({
 		name: '',
 		note: '',
 		color: ''
-	}
+	})
 
-	const editFields: editFieldsType = {
+	const editFields: editFieldsType = $state({
 		id: 0,
 		name: '',
 		note: '',
 		color: ''
-	}
+	})
 
-	export function startAddNew () {
+	$effect(() => {
+		if (type === 'edit') startEditEntry()
+		if (type === 'addNew') startAddNew()
+	})
+
+	function startAddNew() {
 		delete addNewFields.budget
 		addNewFields.name = ''
 		addNewFields.note = ''
 		addNewFields.color = ''
 
 		showModal = true
-		modalMode = 'addNew'
+		type = 'addNew'
 	}
 
-	export function startEditEntry (entry: monthlyReportType) {
+	function startEditEntry() {
 		delete editFields.budget
 
-		const cat = cats.find(item => item.id === entry.catId)
+		const cat = cats.find(item => item.id === editCatId)
 		if (!cat) throw Error('cannot find category')
 
 		editFields.id = cat.id
@@ -54,68 +90,50 @@
 			}
 		}
 
-		modalMode = 'edit'
+		type = 'edit'
 		showModal = true
 	}
 
-	async function saveNew () {
-		const {err} = await to(axios.post('/api/cats', addNewFields))
+	async function saveNew(e: Event) {
+		e.preventDefault()
+		const { err } = await to(axios.post('/api/cats', addNewFields))
 		if (err) console.error('err: ', err)
-		if (!err) showModal = false
+		if (!err) {
+			showModal = false
+			type = ''
+		}
 
 		await invalidateAll()
 	}
 
-	async function saveEdit () {
-		const {err} = await to(axios.put('/api/cats', editFields))
+	async function saveEdit(e: Event) {
+		e.preventDefault()
+		const { err } = await to(axios.put('/api/cats', editFields))
 		if (err) console.error('err: ', err)
-		if (!err) showModal = false
+		if (!err) {
+			showModal = false
+			type = ''
+		}
 
 		await invalidateAll()
 	}
 </script>
 
-<script lang=ts context="module">
-	interface editFieldsType {
-		id: number
-		name: string
-		note: string|null
-		color: string|null
-		budget?: {
-			id: number
-			monthId: number
-			catId: number
-			amount: number
-		}
-	}
-
-	interface newFieldsType {
-		name: string
-		note: string|null
-		color: string|null
-		budget?: {
-			monthId: number
-			catId: number
-			amount: number
-		}
-	}
-</script>
-
-<Modal bind:showModal on:close={() => modalMode = null}>
-	{#if modalMode === 'addNew'}
+<Modal bind:showModal onClose={() => (type = '')}>
+	{#if type === 'addNew'}
 		<h2 class="h5">New Category</h2>
 
-		<form on:submit|preventDefault={saveNew}>
+		<form onsubmit={saveNew}>
 			<label>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
-				<input type="text" bind:value={addNewFields.name} autofocus>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" bind:value={addNewFields.name} autofocus />
 			</label>
 			<label>
 				<span class="label">Color</span>
-				<input type="color" bind:value={addNewFields.color}>
+				<input type="color" bind:value={addNewFields.color} />
 			</label>
-			<AddBudget bind:value={addNewFields.budget} monthId={monthId} />
+			<AddBudget bind:value={addNewFields.budget} {monthId} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={addNewFields.note}></textarea>
@@ -126,20 +144,20 @@
 		</form>
 	{/if}
 
-	{#if modalMode === 'edit'}
+	{#if type === 'edit'}
 		<h2 class="h5">Edit Category</h2>
 
-		<form on:submit|preventDefault={saveEdit}>
+		<form onsubmit={saveEdit}>
 			<label>
 				<span class="label">Name</span>
-				<!-- svelte-ignore a11y-autofocus -->
-				<input type="text" bind:value={editFields.name} autofocus>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" bind:value={editFields.name} autofocus />
 			</label>
 			<label>
 				<span class="label">Color</span>
-				<input type="color" bind:value={editFields.color}>
+				<input type="color" bind:value={editFields.color} />
 			</label>
-			<AddBudget bind:value={editFields.budget} monthId={monthId} />
+			<AddBudget bind:value={editFields.budget} {monthId} />
 			<label>
 				<span class="label">Note</span>
 				<textarea bind:value={editFields.note}></textarea>
@@ -153,5 +171,4 @@
 
 <style lang="postcss">
 	/* @import '@styles/mediaQueries.pcss'; */
-
 </style>

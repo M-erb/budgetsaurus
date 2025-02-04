@@ -33,32 +33,28 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const catData = structuredClone(cleanData)
 	delete catData.budget
 
-	const newEntry = await db
-		.insert(cats)
-		.values(catData)
-		.returning().get()
+	const newEntry = await db.insert(cats).values(catData).returning().get()
 
 	if (!budgetData) return json(newEntry)
 
 	budgetData.catId = newEntry.id
-	const newBudget = await db
-		.insert(budgets)
-		.values(budgetData!)
-		.returning().get()
+	const newBudget = await db.insert(budgets).values(budgetData!).returning().get()
 
 	return json({ ...newEntry, budget: newBudget })
 }
 
-async function verifyPost (data:unknown) {
+async function verifyPost(data: unknown) {
 	const validation = z.object({
 		name: z.string().min(1, '"Name" is a required field'),
 		note: z.string(),
 		color: z.string(),
-		budget: z.object({
-			monthId: z.number(),
-			catId: z.number(),
-			amount: z.number().int().nonnegative()
-		}).optional()
+		budget: z
+			.object({
+				monthId: z.number(),
+				catId: z.number(),
+				amount: z.number().int().nonnegative()
+			})
+			.optional()
 	})
 
 	const result = validation.parse(data)
@@ -95,40 +91,40 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		.update(cats)
 		.set(catData)
 		.where(eq(cats.id, catData.id))
-		.returning().get()
+		.returning()
+		.get()
 
 	if (!budgetData || !budgetData.monthId) return json(updateEntry)
 
 	// make sure budget has a catId
 	budgetData.catId = updateEntry.id
 
-	const updateBudget = budgetData.id ?
-		await db
-			.update(budgets)
-			.set(budgetData!)
-			.where(eq(budgets.id, budgetData.id))
-			.returning().get()
-		:
-		await db
-			.insert(budgets)
-			.values(budgetData!)
-			.returning().get()
+	const updateBudget = budgetData.id
+		? await db
+				.update(budgets)
+				.set(budgetData!)
+				.where(eq(budgets.id, budgetData.id))
+				.returning()
+				.get()
+		: await db.insert(budgets).values(budgetData!).returning().get()
 
 	return json({ ...updateEntry, budget: updateBudget })
 }
 
-async function verifyPut (data:unknown) {
+async function verifyPut(data: unknown) {
 	const validation = z.object({
 		id: z.number(),
 		name: z.string().min(1, '"Name" is a required field'),
 		note: z.string(),
 		color: z.string(),
-		budget: z.object({
-			id: z.number().optional(),
-			monthId: z.number(),
-			catId: z.number(),
-			amount: z.number().int().nonnegative()
-		}).optional()
+		budget: z
+			.object({
+				id: z.number().optional(),
+				monthId: z.number(),
+				catId: z.number(),
+				amount: z.number().int().nonnegative()
+			})
+			.optional()
 	})
 
 	const result = validation.parse(data)

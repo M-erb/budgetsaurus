@@ -1,16 +1,17 @@
-<script lang=ts>
+<script lang="ts">
+	import { run } from 'svelte/legacy'
+
 	import Dollar from '$lib/icons/dollar.svelte'
 	import { numFormat } from '$lib/lilUtils'
-	export let label = ''
-	export let value: number|string
-	let display: string = ''
-
-	$: {
-		value = typeof value === 'string' ? Number(value.replace(/\D/g,'')) : Number(value)
-		display = centsToDollars(value)
+	interface Props {
+		label?: string
+		value: number | string
 	}
 
-	function centsToDollars (num:number):string {
+	let { label = '', value = $bindable() }: Props = $props()
+	let display: string = $state('')
+
+	function centsToDollars(num: number): string {
 		const dollars = num / 100
 		if (dollars === 0) return '0.00'
 
@@ -18,10 +19,14 @@
 		return result
 	}
 
-	function controlSelect (e: Event) {
+	function controlSelect(e: Event) {
 		const target = e.target as HTMLInputElement
 		target.selectionStart = target.selectionEnd
 	}
+	run(() => {
+		value = typeof value === 'string' ? Number(value.replace(/\D/g, '')) : Number(value)
+		display = centsToDollars(value)
+	})
 </script>
 
 <label class="centsToDollars">
@@ -31,7 +36,7 @@
 
 	<div class="num_field">
 		<Dollar />
-		<input type="text" bind:value={value} on:select={controlSelect} />
+		<input type="text" bind:value onselect={controlSelect} />
 		<div class="fake_input">
 			<span class="num_display">{display}</span>
 		</div>
@@ -41,25 +46,20 @@
 <style lang="postcss">
 	/* @import '@styles/mediaQueries.pcss'; */
 
-	label {
-		position: relative;
-		z-index: 1;
-	}
-
 	.num_field {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: var(--size-2);
 
-		position: relative;
-		z-index: 1;
 		font-family: var(--font-mono);
 		background-color: var(--color-slate-500);
 		border: 1px solid var(--color-grey-300);
 		border-radius: var(--radius-md);
 		padding: var(--size-2) var(--size-2) var(--size-2) 0;
-		transition: color .3s ease-in-out, border-color .3s ease-in-out;
+		transition:
+			color 0.3s ease-in-out,
+			border-color 0.3s ease-in-out;
 		line-height: 1.4;
 		cursor: pointer;
 
@@ -70,8 +70,6 @@
 			line-height: 1.4;
 
 			.num_display {
-				position: relative;
-
 				&::after {
 					content: '';
 					display: none;

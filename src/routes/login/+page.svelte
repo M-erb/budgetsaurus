@@ -1,8 +1,12 @@
-<script lang=ts>
+<script lang="ts">
 	import type { ActionData } from './$types'
 	import { enhance } from '$app/forms'
 
-	export let form:ActionData
+	interface Props {
+		form: ActionData
+	}
+
+	let { form }: Props = $props()
 </script>
 
 <section class="container_sm">
@@ -16,15 +20,15 @@
 		<form method="POST" action="?/login" use:enhance>
 			<label>
 				<span class="label">Email</span>
-				<input name="email" type="email">
+				<input name="email" type="email" />
 			</label>
 			<label>
 				<span class="label">Password</span>
-				<input name="pass" type="password">
+				<input name="pass" type="password" />
 			</label>
 
 			<div class="btn_wrap __right">
-				<button class=btn>Log in</button>
+				<button class="btn">Log in</button>
 				<!-- <button class=btn formaction="?/register">Register</button> -->
 			</div>
 		</form>

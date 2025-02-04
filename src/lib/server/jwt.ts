@@ -11,15 +11,20 @@ interface payloadType extends JwtPayload {
 const JWT_SECRET = env.JWT_SECRET || process.env.JWT_SECRET || ''
 
 export const jwtSign = async (payload: payloadType): Promise<string> => {
-	const token = await jwt.sign({
-		id: payload.id,
-		exp: Math.floor(Date.now() / 1000) + 86400 // 24 hours
-	}, JWT_SECRET)
+	const token = await jwt.sign(
+		{
+			id: payload.id,
+			exp: Math.floor(Date.now() / 1000) + 86400 // 24 hours
+		},
+		JWT_SECRET
+	)
 
 	return token
 }
 
-export const verifyUser = async (token: string): Promise<typeof schema.users.$inferInsert | undefined> => {
+export const verifyUser = async (
+	token: string
+): Promise<typeof schema.users.$inferInsert | undefined> => {
 	const isValid = await jwt.verify(token, JWT_SECRET)
 	if (!isValid) throw Error('something went wrong')
 

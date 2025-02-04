@@ -5,11 +5,13 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 ## First time Dev setup
 
 Install packages:
+
 ```bash
 npm i
 ```
 
 Create the local sqlite db file and populate with latest migrations+seed:
+
 ```bash
 touch ./drizzle/dev_db.db
 
@@ -23,11 +25,13 @@ npm run dev-seed
 ```
 
 Start a development server:
+
 ```bash
 npm run dev
 ```
 
 If you have edit the Schema (`src/lib/server/schema.ts`) file then you need to create a new migration file and apply it to the dev server:
+
 ```bash
 # first generate the drizzle migration files
 npm run gen-migrate
@@ -49,14 +53,14 @@ You can preview the production build with `npm run preview`.
 ## TODOs
 
 - [x] Add nav to month page
-	- [x] income
-	- [x] report
-	- [x] transactions
+  - [x] income
+  - [x] report
+  - [x] transactions
 - [x] add income feat
 - [x] add shared feat
-	- [x] share transaction amount with another table
-	- [x] new query to show all shared amount totalled by category
-	- [x] adjust other report queries to only show shared amount instead of total
+  - [x] share transaction amount with another table
+  - [x] new query to show all shared amount totalled by category
+  - [x] adjust other report queries to only show shared amount instead of total
 - [ ] Add+edit incomes
 - [ ] Add+edit transactions
 - [ ] Add+edit years and months

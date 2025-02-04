@@ -1,3 +1,50 @@
+<script lang="ts" module>
+	export interface monthlyReportType {
+		yearId: number
+		yearName: string
+		monthId: number
+		monthName: string
+		catId: number | null
+		catName: string | null
+		catColor: string | null
+		catNote: string | null
+		totalAmount: number
+		totalShared: number
+		budgetAmount: number | null
+	}
+
+	export interface income {
+		date: Date | null
+		id: number
+		name: string
+		createdAt: Date | null
+		note: string | null
+		monthId: number
+		amount: number
+		planned: number
+		month: {
+			id: number
+			yearId: number
+			name: string
+			note: string | null
+		}
+	}
+
+	export interface cat {
+		id: number
+		note: string | null
+		color: string
+		name: string
+		createdAt: Date | null
+		budgets: {
+			id: number
+			catId: number
+			monthId: number
+			amount: number
+		}[]
+	}
+</script>
+
 <script lang="ts">
 	import type { ComponentProps } from 'svelte'
 	import { onMount } from 'svelte'
@@ -10,18 +57,36 @@
 	import type { ChartType } from 'chart.js'
 	import AddOrEditCats from '$lib/components/add-or-edit-cats.svelte'
 
-	export let monthlyReport: monthlyReportType[]
-	export let incomes: income[]
-	export let cats: cat[]
+	interface Props {
+		monthlyReport: monthlyReportType[]
+		incomes: income[]
+		cats: cat[]
+	}
 
-	let startAddNewCat: ComponentProps<AddOrEditCats>['startAddNew']
-	let startEditCat: ComponentProps<AddOrEditCats>['startEditEntry']
+	let { monthlyReport, incomes, cats }: Props = $props()
 
-	$:allTotalShared = monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
-	$:totalBudget = monthlyReport.reduce((accum, item) => (accum += item.budgetAmount ?? 0), 0)
-	$:totalSpent = monthlyReport.reduce((accum, item) => (accum += item.totalAmount), 0)
-	$:plannedTotalIncomes = incomes.reduce((accum, item) => (accum += item.planned), 0)
-	$:amountTotalIncomes = incomes.reduce((accum, item) => (accum += item.amount), 0)
+	let type: 'addNew' | 'edit' | '' = $state('')
+	let editCatId: number = $state(0)
+
+	function startEditCat(id: number) {
+		type = 'edit'
+		editCatId = id
+	}
+
+	function startAddNewCat() {
+		type = 'addNew'
+		editCatId = 0
+	}
+
+	let allTotalShared = $derived(
+		monthlyReport.reduce((accum, item) => (accum += item.totalShared), 0)
+	)
+	let totalBudget = $derived(
+		monthlyReport.reduce((accum, item) => (accum += item.budgetAmount ?? 0), 0)
+	)
+	let totalSpent = $derived(monthlyReport.reduce((accum, item) => (accum += item.totalAmount), 0))
+	let plannedTotalIncomes = $derived(incomes.reduce((accum, item) => (accum += item.planned), 0))
+	let amountTotalIncomes = $derived(incomes.reduce((accum, item) => (accum += item.amount), 0))
 
 	Chart.register(DoughnutController, ArcElement, Legend, Tooltip)
 	Chart.defaults.color = '#fff'
@@ -32,15 +97,19 @@
 		color: '#fff'
 	}
 
-	let catChartEl:HTMLCanvasElement
+	let catChartEl: HTMLCanvasElement | undefined = $state()
 	const chartData = {
 		type: 'doughnut' as ChartType,
 		data: {
 			labels: monthlyReport.map(cat => cat.catName!),
-			datasets: [{
-				data: monthlyReport.map(cat => Number(numFormat((cat.totalAmount! - cat.totalShared) / 100, {style: 'decimal'}))),
-				backgroundColor: monthlyReport.map(cat => cat.catColor!)
-			}],
+			datasets: [
+				{
+					data: monthlyReport.map(cat =>
+						Number(numFormat((cat.totalAmount! - cat.totalShared) / 100, { style: 'decimal' }))
+					),
+					backgroundColor: monthlyReport.map(cat => cat.catColor!)
+				}
+			],
 			options: {
 				plugins: {
 					legend: {
@@ -67,57 +136,10 @@
 	}
 
 	onMount(() => {
-		if (browser) {
+		if (browser && catChartEl) {
 			new Chart(catChartEl, chartData)
 		}
 	})
-</script>
-
-<script lang=ts context="module">
-	export interface monthlyReportType {
-		yearId: number
-		yearName: string
-		monthId: number
-		monthName: string
-		catId: number|null
-		catName: string|null
-		catColor: string|null
-		catNote: string|null
-		totalAmount: number
-		totalShared: number
-		budgetAmount: number|null
-	}
-
-	export interface income {
-		date: Date|null
-		id: number
-		name: string
-		createdAt: Date|null
-		note: string|null
-		monthId: number
-		amount: number
-		planned: number
-		month: {
-			id: number
-			yearId: number
-			name: string
-			note: string|null
-		}
-	}
-
-	export interface cat {
-		id: number
-		note: string|null
-		color: string
-		name: string
-		createdAt: Date|null
-		budgets: {
-			id: number
-			catId: number
-			monthId: number
-			amount: number
-		}[]
-	}
 </script>
 
 <section class="container_sm">
@@ -197,11 +219,11 @@
 				<div class="ft_col cat_icon"></div>
 			</div>
 
-			{#each monthlyReport as cat }
+			{#each monthlyReport as cat}
 				{@const totalAmount = cat.totalAmount - cat.totalShared}
 				{@const difference = (cat.budgetAmount ?? 0) - totalAmount}
 				{@const isDiffNeg = isNegative(difference)}
-				<button class="ft_row cat_item" on:click={() => startEditCat ? startEditCat(cat) : ''}>
+				<button class="ft_row cat_item" onclick={() => startEditCat(cat.catId!)}>
 					<div class="ft_col cat_color">
 						<div class="color_box" style:background-color={cat.catColor}></div>
 					</div>
@@ -233,7 +255,7 @@
 		</div>
 
 		<div class="btn_wrap __left __t_space">
-			<button class="btn" on:click={() => startAddNewCat ? startAddNewCat() : startAddNewCat}><Plus /><span>Category</span></button>
+			<button class="btn" onclick={() => startAddNewCat()}><Plus /><span>Category</span></button>
 		</div>
 	</div>
 </section>
@@ -253,7 +275,7 @@
 				</div>
 			</div>
 
-			{#each monthlyReport as cat }
+			{#each monthlyReport as cat}
 				{@const totalAmount = cat.totalShared ?? 0}
 				<div class="ft_row">
 					<div class="ft_col __color">
@@ -285,7 +307,7 @@
 	</div>
 </section>
 
-<AddOrEditCats bind:startAddNew={startAddNewCat} bind:startEditEntry={startEditCat} cats={cats} monthId={monthlyReport[0].monthId} />
+<AddOrEditCats bind:type {editCatId} {cats} monthId={monthlyReport[0].monthId} />
 
 <style lang="postcss">
 	@import '@styles/mediaQueries.pcss';

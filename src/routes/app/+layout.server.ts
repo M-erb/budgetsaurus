@@ -11,12 +11,12 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 		if (!user) redirect(302, '/login')
 
 		const cleaned: {
-			name: string;
-			email: string;
-			pass?: string;
-			id?: number | undefined;
-			active?: boolean | null | undefined;
-			createdAt?: Date | null | undefined;
+			name: string
+			email: string
+			pass?: string
+			id?: number | undefined
+			active?: boolean | null | undefined
+			createdAt?: Date | null | undefined
 		} = structuredClone(user)
 
 		delete cleaned.pass

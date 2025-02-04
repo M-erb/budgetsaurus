@@ -1,64 +1,82 @@
-<script lang=ts>
-	import { createEventDispatcher } from 'svelte'
+<script lang="ts">
 	import CloseX from '$lib/icons/close-x.svelte'
 	import { browser } from '$app/environment'
 
-	const dispatch = createEventDispatcher()
-	export let showModal:boolean
-
-	let dialog:HTMLDialogElement
-
-	$: {
-		if (dialog && dialog.showModal && showModal) {
-			if (browser) bodyStyles()
-			dialog.showModal()
-		}
-		if (dialog && dialog.close && !showModal) {
-			if (browser) undoBodyStyles()
-			dialog.close()
-		}
+	interface Props {
+		showModal?: boolean
+		lgModal?: boolean
+		onClose?: () => void
+		children?: import('svelte').Snippet
 	}
 
-	function closeModal () {
+	let {
+		showModal = $bindable(false),
+		lgModal = $bindable(false),
+		children,
+		onClose
+	}: Props = $props()
+
+	function closeModal() {
 		showModal = false
-		dispatch('close')
+		lgModal = false
+		if (onClose) onClose()
 	}
 
-	function bodyStyles () {
+	function clickOutside(e: Event) {
+		if (e.target === e.currentTarget) closeModal()
+	}
+
+	function bodyStyles() {
 		const body = document.querySelector('body')
 		body?.classList.add('modal-open')
 	}
 
-	function undoBodyStyles () {
+	function undoBodyStyles() {
 		const body = document.querySelector('body')
 		body?.classList.remove('modal-open')
 	}
+
+	$effect(() => {
+		if (showModal && browser) bodyStyles()
+		if (!showModal && browser) undoBodyStyles()
+	})
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	class="Modal"
 	class:active={showModal}
-	bind:this={dialog}
-	on:close={closeModal}
-	on:click|self={closeModal}
->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="modal_inner" class:active={showModal} on:click|stopPropagation>
-		<!-- svelte-ignore a11y-autofocus -->
-		<button class=close_btn autofocus on:click|preventDefault={closeModal}><CloseX /></button>
-		<slot />
+	class:lgModal
+	onclick={clickOutside}
+	aria-roledescription="dialog"
+	aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal_inner" class:active={showModal}>
+		<!-- svelte-ignore a11y_autofocus -->
+		<button class="close_btn" autofocus onclick={closeModal}><CloseX /></button>
+		{@render children?.()}
 	</div>
-</dialog>
+</div>
 
-<style lang=postcss>
-	dialog {
+<style lang="postcss">
+	@import '@styles/mediaQueries.pcss';
+
+	.Modal {
 		background-color: transparent;
 		border: none;
-		width: 100vw;
-		height: 100vh;
+		min-width: calc(100vw - 32px);
+		max-width: calc(100vw - 32px);
+		min-height: calc(100vh - 32px);
+		margin: 16px;
 
 		padding: 0;
 		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 999;
 
 		display: none;
 		justify-content: center;
@@ -68,21 +86,34 @@
 			display: flex;
 		}
 
-		&::backdrop {
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: -1;
 			background-color: var(--color-slate-900);
-			opacity: .9;
+			opacity: 0.9;
 		}
 
 		.modal_inner {
 			position: relative;
-			padding: var(--size-7) var(--size-4) var(--size-4);
+			padding: var(--size-7) var(--size-5) var(--size-5);
 
-			width: 100%;
-			max-width: 360px;
+			width: auto;
+			max-height: calc(100vh - 32px);
+			overflow: auto;
+			max-width: calc(100vh - 32px);
 			border-radius: var(--radius-xl);
 			background-color: var(--color-slate-700);
 			border: 4px solid var(--color-blue-200);
 			color: var(--color-white);
+
+			@media (--md) {
+				max-width: 80%;
+			}
 		}
 
 		&[open] {
@@ -102,10 +133,23 @@
 			padding: 0;
 			color: var(--color-slate-200);
 			cursor: pointer;
-			transition: color .3s ease-in-out;
+			transition: color 0.3s ease-in-out;
 
 			&:hover {
 				color: var(--color-red-200);
+			}
+		}
+
+		&.lgModal {
+			align-items: stretch;
+
+			.modal_inner {
+				width: 100%;
+				height: 100%;
+
+				@media (--md) {
+					max-width: 100%;
+				}
 			}
 		}
 	}
