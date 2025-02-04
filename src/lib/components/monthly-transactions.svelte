@@ -110,6 +110,7 @@
 	import AddShare from '$lib/components/add-share.svelte'
 	import DisplayCat from '$lib/components/display-cat-field.svelte'
 	import { untrack } from 'svelte'
+	import { toasts } from '$lib/toast'
 
 	const { month, cats, shareGroups }: props = $props()
 
@@ -130,10 +131,8 @@
 		amount: 0,
 		note: ''
 	})
-	let totalMultiRemaining: number = $derived(totalMultiFields - addNewFields.amount)
 
-	$inspect(newSelectedCats)
-	$inspect(multiNewFields)
+	let totalMultiRemaining: number = $derived(totalMultiFields - addNewFields.amount)
 
 	$effect(() => {
 		// Remove multiNewField items that are not selectedCats
@@ -199,8 +198,8 @@
 		modalMode = 'addMulti'
 	}
 
-	async function saveNew(e: Event) {
-		e.preventDefault()
+	async function saveNew(e?: Event) {
+		if (e) e.preventDefault()
 
 		const { err }: { err: any; res: any } = await to(axios.post('/api/transactions', addNewFields))
 		if (err) {
@@ -215,7 +214,55 @@
 		await invalidateAll()
 	}
 
-	async function saveMulti(e: Event) {}
+	async function saveMulti(e?: Event) {
+		if (e) e.preventDefault()
+		errorBag = {}
+
+		if (multiNewFields.length === 0) {
+			toasts.warning('At least one category is required')
+			return
+		}
+
+		let areAnyEmpty = false
+
+		multiNewFields.forEach(item => {
+			item.name = addNewFields.name
+			item.note = addNewFields.note
+
+			if (item.amount === 0) areAnyEmpty = true
+		})
+
+		if (areAnyEmpty) {
+			toasts.warning('Not all amounts were entered')
+			return
+		}
+
+		const errIndexes: number[] = []
+
+		for (const [i, item] of multiNewFields.entries()) {
+			const { err }: { err: any; res: any } = await to(axios.post('/api/transactions', item))
+			if (err) {
+				console.error('err: ', err)
+
+				const data: apiErr = err.data
+				if (data?.errors?.issues?.length) errorBag = fillErrorBag(data.errors.issues)
+
+				errIndexes.push(i)
+				return
+			}
+		}
+
+		if (errIndexes.length) {
+			toasts.warning(
+				`Some errors occured, ${multiNewFields.length - errIndexes.length}/${multiNewFields.length} successfully saved`
+			)
+			multiNewFields = multiNewFields.filter((item, i) => !errIndexes.includes(i))
+			return
+		}
+
+		showModal = false
+		await invalidateAll()
+	}
 
 	function startEditEntry(entry: transaction) {
 		errorBag = {}
@@ -286,7 +333,7 @@
 			{#each month.transactions as item}
 				{@const amount = combineShares(item.amount, item.shares)}
 				{@const hasShares = Boolean(item.shares.length)}
-				<button class="ft_row" onclick={() => startEditEntry(item)} title="Edit Income">
+				<button class="ft_row" onclick={() => startEditEntry(item)} title="Edit Transaction">
 					<div class="ft_col tran_color">
 						<div class="color_box" style:background-color={item.cat.color}></div>
 					</div>
@@ -468,11 +515,6 @@
 			align-items: flex-start;
 			flex-wrap: wrap;
 			gap: var(--size-4);
-
-			.display {
-				color: var(--theme-text-1);
-				margin-bottom: var(--size-2);
-			}
 		}
 	}
 
