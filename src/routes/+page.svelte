@@ -1,7 +1,7 @@
 <section class="container_sm">
 	<h1>Welcome to Budgetsaurus!</h1>
 	<div class="btn_wrap __center">
-		<a class=btn href="/login">Login</a>
+		<a class="btn" href="/login">Login</a>
 	</div>
 </section>
 

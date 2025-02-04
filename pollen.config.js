@@ -1,6 +1,7 @@
-const fontStack = 'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'
+const fontStack =
+	'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'
 
-export default (pollen) => ({
+export default pollen => ({
 	output: './src/styles/variables.css',
 	modules: {
 		color: {

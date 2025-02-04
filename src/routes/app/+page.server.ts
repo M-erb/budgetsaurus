@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit'
 import { verifyUser } from '$lib/server/jwt'
 import { db } from '$lib/server/db'
 
-export const load: PageServerLoad = async ({cookies}) => {
+export const load: PageServerLoad = async ({ cookies }) => {
 	const token = cookies.get('token')
 	if (!token) redirect(302, '/login')
 

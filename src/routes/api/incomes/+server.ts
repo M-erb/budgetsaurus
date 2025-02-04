@@ -29,15 +29,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	if (verifyErr !== null) error(400, { message: 'missing fields', errors: verifyErr })
 	if (cleanData === null) error(500, 'Something went wrong')
 
-	const newEntry = await db
-		.insert(incomes)
-		.values(cleanData)
-		.returning().get()
+	const newEntry = await db.insert(incomes).values(cleanData).returning().get()
 
 	return json(newEntry)
 }
 
-async function verifyPost (data:unknown) {
+async function verifyPost(data: unknown) {
 	const validation = z.object({
 		monthId: z.number(),
 		name: z.string().min(1, '"Name" is a required field'),
@@ -76,12 +73,13 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		.update(incomes)
 		.set(cleanData)
 		.where(eq(incomes.id, cleanData.id))
-		.returning().get()
+		.returning()
+		.get()
 
 	return json(editEntry)
 }
 
-async function verifyPut (data:unknown) {
+async function verifyPut(data: unknown) {
 	const validation = z.object({
 		id: z.number(),
 		monthId: z.number(),

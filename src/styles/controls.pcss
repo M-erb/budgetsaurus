@@ -9,10 +9,13 @@ label {
 		font-weight: bold;
 		text-transform: uppercase;
 		margin-bottom: var(--size-1);
-		transition: color .3s ease-in-out, border-color .3s ease-in-out;
+		transition:
+			color 0.3s ease-in-out,
+			border-color 0.3s ease-in-out;
 	}
 
-	& input, & textarea {
+	& input,
+	& textarea {
 		width: 100%;
 		min-width: none;
 		font-family: var(--font-body);
@@ -23,14 +26,16 @@ label {
 		border: 1px solid var(--color-grey-300);
 		border-radius: var(--radius-md);
 		padding: var(--size-2) var(--size-2);
-		transition: color .3s ease-in-out, border-color .3s ease-in-out;
+		transition:
+			color 0.3s ease-in-out,
+			border-color 0.3s ease-in-out;
 
 		&:focus-visible {
 			outline: 3px solid var(--color-blue);
 		}
 	}
 
-	& input[type=color] {
+	& input[type='color'] {
 		width: 32px;
 		min-width: 32px;
 		height: 32px;
@@ -80,7 +85,7 @@ label {
 				display: inline-block;
 				background: var(--color-grey-400);
 				border-radius: 18px;
-				transition: ease .3s;
+				transition: ease 0.3s;
 			}
 
 			/* Swtich toggle */
@@ -96,7 +101,7 @@ label {
 				border-radius: 50%;
 				background: rgb(255, 255, 255);
 				box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-				transition: ease .3s;
+				transition: ease 0.3s;
 			}
 
 			&:checked::before {
@@ -121,7 +126,8 @@ label {
 			color: var(--color-red-400);
 		}
 
-		& input, & textarea {
+		& input,
+		& textarea {
 			border-color: var(--color-red-400);
 		}
 
@@ -148,7 +154,9 @@ label {
 	font-size: var(--scale-1);
 	text-align: center;
 	text-decoration: none;
-	transition: background-color .3s ease-in-out, color .3s ease-in-out;
+	transition:
+		background-color 0.3s ease-in-out,
+		color 0.3s ease-in-out;
 	cursor: pointer;
 
 	& span {
@@ -216,7 +224,9 @@ label {
 	font-size: var(--scale-2);
 	text-align: center;
 	text-decoration: none;
-	transition: box-shadow .3s ease-in-out, color .3s ease-in-out;
+	transition:
+		box-shadow 0.3s ease-in-out,
+		color 0.3s ease-in-out;
 	box-shadow: var(--color-black) 0px 0px 0px 0px;
 	cursor: pointer;
 
@@ -254,7 +264,9 @@ label {
 	font-size: var(--scale-2);
 	text-align: center;
 	text-decoration: none;
-	transition: background-color .3s ease-in-out, color .3s ease-in-out;
+	transition:
+		background-color 0.3s ease-in-out,
+		color 0.3s ease-in-out;
 	cursor: pointer;
 
 	& span {
@@ -272,7 +284,7 @@ label {
 	}
 }
 
-html[data-theme="dark"] {
+html[data-theme='dark'] {
 	.btn {
 		&:hover {
 			box-shadow: var(--color-white) 5px 5px 0px 0px;

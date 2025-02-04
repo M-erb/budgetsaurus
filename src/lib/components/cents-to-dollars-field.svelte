@@ -1,18 +1,17 @@
-<script lang=ts>
+<script lang="ts">
 	import { run } from 'svelte/legacy'
 
 	import Dollar from '$lib/icons/dollar.svelte'
 	import { numFormat } from '$lib/lilUtils'
 	interface Props {
 		label?: string
-		value: number|string
+		value: number | string
 	}
 
-	let { label = '', value = $bindable() }: Props = $props();
+	let { label = '', value = $bindable() }: Props = $props()
 	let display: string = $state('')
 
-
-	function centsToDollars (num:number):string {
+	function centsToDollars(num: number): string {
 		const dollars = num / 100
 		if (dollars === 0) return '0.00'
 
@@ -20,14 +19,14 @@
 		return result
 	}
 
-	function controlSelect (e: Event) {
+	function controlSelect(e: Event) {
 		const target = e.target as HTMLInputElement
 		target.selectionStart = target.selectionEnd
 	}
 	run(() => {
-		value = typeof value === 'string' ? Number(value.replace(/\D/g,'')) : Number(value)
+		value = typeof value === 'string' ? Number(value.replace(/\D/g, '')) : Number(value)
 		display = centsToDollars(value)
-	});
+	})
 </script>
 
 <label class="centsToDollars">
@@ -37,7 +36,7 @@
 
 	<div class="num_field">
 		<Dollar />
-		<input type="text" bind:value={value} onselect={controlSelect} />
+		<input type="text" bind:value onselect={controlSelect} />
 		<div class="fake_input">
 			<span class="num_display">{display}</span>
 		</div>
@@ -58,7 +57,9 @@
 		border: 1px solid var(--color-grey-300);
 		border-radius: var(--radius-md);
 		padding: var(--size-2) var(--size-2) var(--size-2) 0;
-		transition: color .3s ease-in-out, border-color .3s ease-in-out;
+		transition:
+			color 0.3s ease-in-out,
+			border-color 0.3s ease-in-out;
 		line-height: 1.4;
 		cursor: pointer;
 

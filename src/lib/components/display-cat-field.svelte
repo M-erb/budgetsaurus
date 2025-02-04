@@ -1,22 +1,20 @@
-<script lang=ts>
+<script lang="ts">
 	interface cat {
 		id: number
-		note: string|null
-		createdAt: Date|null
+		note: string | null
+		createdAt: Date | null
 		color: string
 		name: string
 	}
 
 	interface Props {
-		value: number;
-		cats: cat[];
+		value: number
+		cats: cat[]
 	}
 
-	let { value, cats }: Props = $props();
+	let { value, cats }: Props = $props()
 
-	let selected: cat|undefined = $derived(value ? cats.find(item => item.id === value) : undefined)
-
-	
+	let selected: cat | undefined = $derived(value ? cats.find(item => item.id === value) : undefined)
 </script>
 
 <div class="display_cat">
@@ -24,7 +22,7 @@
 		{#if selected}
 			<div class="cat_color" style:background-color={selected.color}></div>
 		{/if}
-		<span class="selected_value">{ selected ? selected.name : 'Select a Category' }</span>
+		<span class="selected_value">{selected ? selected.name : 'Select a Category'}</span>
 	</div>
 </div>
 

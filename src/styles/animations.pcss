@@ -1,13 +1,23 @@
 /* keyframs */
 @keyframes blink {
-	0% { opacity:1; }
-	50% { opacity:0; }
-	100% { opacity:1; }
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 @keyframes fadeIn {
-	0% { opacity:0; }
-	100% { opacity:1; }
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 @keyframes fadInUpShort {
@@ -71,12 +81,17 @@
 }
 
 @keyframes scale50 {
-	0%, 100% { transform: scale(.2)}
-	50% { transform: scale(1)}
+	0%,
+	100% {
+		transform: scale(0.2);
+	}
+	50% {
+		transform: scale(1);
+	}
 }
 
 /* AOS animations */
-[data-aos="width-grow"] {
+[data-aos='width-grow'] {
 	opacity: 0;
 	width: 0;
 

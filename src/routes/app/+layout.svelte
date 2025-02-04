@@ -1,14 +1,14 @@
-<script lang=ts>
+<script lang="ts">
 	import type { LayoutData } from './$types'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 
 	const options = {}
 	interface Props {
-		data: LayoutData;
-		children?: import('svelte').Snippet;
+		data: LayoutData
+		children?: import('svelte').Snippet
 	}
 
-	let { data, children }: Props = $props();
+	let { data, children }: Props = $props()
 </script>
 
 <div class="top_area">

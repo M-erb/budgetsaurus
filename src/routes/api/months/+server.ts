@@ -18,7 +18,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		error(401, 'unauthorized')
 	}
 
-	const { res: data, err: jsonErr }: { res: { year: number, month: string } | null, err: unknown | null } = await to(request.json())
+	const {
+		res: data,
+		err: jsonErr
+	}: { res: { year: number; month: string } | null; err: unknown | null } = await to(request.json())
 	if (jsonErr) {
 		console.error('jsonErr: ', jsonErr)
 		error(400, 'Bad request, missing required fields')
@@ -34,7 +37,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	return json(res)
 }
 
-async function verifyPut (data:unknown) {
+async function verifyPut(data: unknown) {
 	const validation = z.object({
 		year: z.object({
 			id: z.number().gt(0)
@@ -55,7 +58,7 @@ async function verifyPut (data:unknown) {
 				'November',
 				'December'
 			])
-		}),
+		})
 	})
 
 	const result = validation.parse(data)
