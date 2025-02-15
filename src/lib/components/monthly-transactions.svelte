@@ -448,8 +448,7 @@
 				{/if}
 			</label>
 			<CentsToDollarsField label="Amount" bind:value={addNewFields.amount} />
-			<!-- <SelectCatField bind:value={addNewFields.catId} cats={cats} /> -->
-			<MiltiSelectCatField value={newSelectedCats} {cats} />
+			<SelectCatField bind:value={addNewFields.catId} {cats} />
 			<AddShare
 				bind:value={addNewFields.share}
 				amount={addNewFields.amount}
