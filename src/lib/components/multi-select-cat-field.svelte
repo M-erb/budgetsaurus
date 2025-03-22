@@ -38,7 +38,7 @@
 
 	function handleBlur(e: FocusEvent) {
 		if (e.relatedTarget) return
-		active = !active
+		active = false
 	}
 </script>
 
