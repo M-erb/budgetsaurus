@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy'
-
-	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
-	import type { E } from 'vitest/dist/chunks/environment.LoooBwUu.js'
 
 	interface cat {
 		id: number
@@ -22,13 +18,9 @@
 
 	let active = $state(false)
 	let searchTxt: string = $state('')
-	let filteredCats: cat[] = $state([])
-
-	run(() => {
-		filteredCats = cats.filter(cat =>
-			cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase())
-		)
-	})
+	let filteredCats: cat[] = $derived.by(() =>
+		cats.filter(cat => cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase()))
+	)
 
 	function select(cat: cat, e: Event) {
 		e.preventDefault()
@@ -39,10 +31,6 @@
 
 		value = value
 	}
-
-	onMount(() => {
-		filteredCats = structuredClone(cats)
-	})
 
 	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') active = true
