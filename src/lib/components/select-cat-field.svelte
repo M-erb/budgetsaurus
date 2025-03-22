@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy'
-
-	import { onMount } from 'svelte'
 	import ChevronUp from '$lib/icons/chevron-up.svelte'
 
 	interface cat {
@@ -22,23 +19,15 @@
 	let active = $state(false)
 	let selected: cat | undefined = $derived(value ? cats.find(item => item.id === value) : undefined)
 	let searchTxt: string = $state('')
-	let filteredCats: cat[] = $state([])
-
-	run(() => {
-		filteredCats = cats.filter(cat =>
-			cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase())
-		)
-	})
+	let filteredCats: cat[] = $derived.by(() =>
+		cats.filter(cat => cat.name.toLocaleLowerCase().includes(searchTxt.toLocaleLowerCase()))
+	)
 
 	function select(cat: cat, e: Event) {
 		e.preventDefault()
 		value = cat.id
 		active = false
 	}
-
-	onMount(() => {
-		filteredCats = structuredClone(cats)
-	})
 
 	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') active = true
@@ -72,7 +61,7 @@
 					placeholder="search for categories" />
 			</label>
 		</li>
-		{#each filteredCats as cat}
+		{#each filteredCats as cat (cat.id)}
 			<li class="option">
 				<button type="button" onclick={e => select(cat, e)}>
 					<div class="cat_color" style:background-color={cat.color}></div>
