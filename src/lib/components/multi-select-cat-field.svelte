@@ -35,9 +35,14 @@
 	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') active = true
 	}
+
+	function handleBlur(e: FocusEvent) {
+		if (e.relatedTarget) return
+		active = !active
+	}
 </script>
 
-<div class="select_field_area" class:active onblur={() => (active = !active)}>
+<div class="select_field_area" class:active onfocusout={handleBlur}>
 	<span class="label">Category</span>
 
 	<button
@@ -69,7 +74,7 @@
 					placeholder="search for categories" />
 			</label>
 		</li>
-		{#each filteredCats as cat}
+		{#each filteredCats as cat (cat.id)}
 			{@const isSelected = value.some(item => cat.id === item.id)}
 			<li class="option">
 				<button type="button" onclick={e => select(cat, e)}>
