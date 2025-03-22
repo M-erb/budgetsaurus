@@ -30,9 +30,14 @@
 	onMount(() => {
 		if (shareGroups.length && !selected) select(shareGroups[0])
 	})
+
+	function handleBlur(e: FocusEvent) {
+		if (e.relatedTarget) return
+		active = false
+	}
 </script>
 
-<div class="select_field_area" class:active>
+<div class="select_field_area" class:active onfocusout={handleBlur}>
 	<span class="label">Select Share Group</span>
 
 	<button class="select_field" type="button" onclick={() => (active = !active)}>
@@ -43,7 +48,7 @@
 	</button>
 
 	<ul class="dropdown_options">
-		{#each shareGroups as shareGroup}
+		{#each shareGroups as shareGroup (shareGroup.id)}
 			<li class="option" title={shareGroup.note}>
 				<button type="button" onclick={e => select(shareGroup, e)}>
 					<span class="cat_name">{shareGroup.name}</span>

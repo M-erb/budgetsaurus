@@ -32,9 +32,14 @@
 	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') active = true
 	}
+
+	function handleBlur(e: FocusEvent) {
+		if (e.relatedTarget) return
+		active = false
+	}
 </script>
 
-<div class="select_field_area" class:active onblur={() => (active = !active)}>
+<div class="select_field_area" class:active onfocusout={handleBlur}>
 	<span class="label">Category</span>
 
 	<button
