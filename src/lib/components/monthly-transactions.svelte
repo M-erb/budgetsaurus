@@ -178,8 +178,9 @@
 		addNewFields.amount = 0
 		addNewFields.note = ''
 
-		showModal = true
 		modalMode = 'addNew'
+		lgModal = false
+		showModal = true
 	}
 
 	function startAddMulti() {
@@ -193,9 +194,9 @@
 		addNewFields.amount = 0
 		addNewFields.note = ''
 
-		showModal = true
-		lgModal = true
 		modalMode = 'addMulti'
+		lgModal = true
+		showModal = true
 	}
 
 	async function saveNew(e?: Event) {
